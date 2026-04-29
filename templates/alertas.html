@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Alertas de Estoque - StockFlow</title>
+</head>
+<body>
+    <h1>Alertas de Baixo Estoque</h1>
+
+    <a href="/">Dashboard</a>
+    <a href="/materiais">Materiais</a>
+    <a href="/movimentacoes">Histórico</a>
+    <a href="/logout">Sair</a>
+
+    <hr>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Material</th>
+                <th>Categoria</th>
+                <th>Quantidade Atual</th>
+                <th>Quantidade Mínima</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in alertas %}
+                <tr>
+                    <td>{{ item.id_material }}</td>
+                    <td>{{ item.nome }}</td>
+                    <td>{{ item.categoria }}</td>
+                    <td>{{ item.quantidade_atual }}</td>
+                    <td>{{ item.quantidade_minima }}</td>
+                    <td>{{ item.status }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Nenhum material com baixo estoque.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

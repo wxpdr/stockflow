@@ -134,3 +134,32 @@ def registrar_saida():
     conexao.close()
 
     return redirect(url_for("materiais.listar_materiais"))
+@materiais.route("/alertas")
+def listar_alertas():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            m.id_material,
+            m.nome,
+            c.nome AS categoria,
+            m.quantidade_atual,
+            m.quantidade_minima,
+            m.status
+        FROM materiais m
+        INNER JOIN categorias c ON m.id_categoria = c.id_categoria
+        WHERE m.quantidade_atual <= m.quantidade_minima
+        AND m.status = 'ativo'
+        ORDER BY m.nome
+    """)
+
+    alertas = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return render_template("alertas.html", alertas=alertas)

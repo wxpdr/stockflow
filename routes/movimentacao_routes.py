@@ -34,3 +34,4 @@ def listar_movimentacoes():
     conexao.close()
 
     return render_template("movimentacoes.html", historico=historico)
+
