@@ -59,3 +59,78 @@ def cadastrar_material():
     conexao.close()
 
     return redirect(url_for("materiais.listar_materiais"))
+
+@materiais.route("/materiais/entrada", methods=["POST"])
+def registrar_entrada():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+    quantidade = int(request.form.get("quantidade"))
+    observacao = request.form.get("observacao")
+
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE materiais
+        SET quantidade_atual = quantidade_atual + %s
+        WHERE id_material = %s
+    """, (quantidade, id_material))
+
+    cursor.execute("""
+        INSERT INTO movimentacoes
+        (id_material, id_usuario, tipo, quantidade, observacao)
+        VALUES (%s, %s, 'entrada', %s, %s)
+    """, (id_material, session["id_usuario"], quantidade, observacao))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+    return redirect(url_for("materiais.listar_materiais"))
+
+@materiais.route("/materiais/saida", methods=["POST"])
+def registrar_saida():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+    quantidade = int(request.form.get("quantidade"))
+    observacao = request.form.get("observacao")
+
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT quantidade_atual
+        FROM materiais
+        WHERE id_material = %s
+    """, (id_material,))
+
+    material = cursor.fetchone()
+
+    if not material or quantidade > material["quantidade_atual"]:
+        cursor.close()
+        conexao.close()
+        return "Quantidade indisponível em estoque."
+
+    cursor.execute("""
+        UPDATE materiais
+        SET quantidade_atual = quantidade_atual - %s
+        WHERE id_material = %s
+    """, (quantidade, id_material))
+
+    cursor.execute("""
+        INSERT INTO movimentacoes
+        (id_material, id_usuario, tipo, quantidade, observacao)
+        VALUES (%s, %s, 'saida', %s, %s)
+    """, (id_material, session["id_usuario"], quantidade, observacao))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+    return redirect(url_for("materiais.listar_materiais"))

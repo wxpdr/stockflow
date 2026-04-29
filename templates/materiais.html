@@ -47,6 +47,66 @@
 
     <hr>
 
+    <h2>Registrar entrada de material</h2>
+
+    <form method="POST" action="/materiais/entrada">
+        <label for="id_material">Material</label>
+        <select id="id_material" name="id_material" required>
+            {% for material in materiais %}
+                <option value="{{ material.id_material }}">
+                    {{ material.nome }} - Estoque atual: {{ material.quantidade_atual }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="quantidade">Quantidade de entrada</label>
+        <input type="number" id="quantidade" name="quantidade" min="1" required>
+
+        <br><br>
+
+        <label for="observacao">Observação</label>
+        <input type="text" id="observacao" name="observacao">
+
+        <br><br>
+
+        <button type="submit">Registrar entrada</button>
+    </form>
+
+
+    <hr>
+
+    <h2>Registrar saída de material</h2>
+
+    <form method="POST" action="/materiais/saida">
+        <label for="id_material_saida">Material</label>
+        <select id="id_material_saida" name="id_material" required>
+            {% for material in materiais %}
+                <option value="{{ material.id_material }}">
+                    {{ material.nome }} - Estoque atual: {{ material.quantidade_atual }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="quantidade_saida">Quantidade de saída</label>
+        <input type="number" id="quantidade_saida" name="quantidade" min="1" required>
+
+        <br><br>
+
+        <label for="observacao_saida">Observação</label>
+        <input type="text" id="observacao_saida" name="observacao">
+
+        <br><br>
+
+        <button type="submit">Registrar saída</button>
+    </form>
+
+    
+    <hr>
+
     <h2>Lista de materiais</h2>
 
     <table border="1" cellpadding="8">
