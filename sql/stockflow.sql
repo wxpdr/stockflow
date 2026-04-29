@@ -47,3 +47,15 @@ CREATE TABLE lista_compras (
     data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_material) REFERENCES materiais(id_material)
 );
+
+
+-- Inserção de usuário administrador padrão (seed)
+-- Este usuário é criado apenas se não existir
+-- Senha em texto simples temporária (será substituída por hash futuramente)
+
+
+INSERT INTO usuarios (nome, email, senha, perfil, status)
+SELECT 'Administrador', 'admin@stockflow.com', '12345678', 'administrador', 'ativo'
+WHERE NOT EXISTS (
+    SELECT 1 FROM usuarios WHERE email = 'admin@stockflow.com'
+);
