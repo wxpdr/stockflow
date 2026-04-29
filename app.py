@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session, redirect, url_for
 from routes.auth_routes import auth
 from database.db import conectar
 
@@ -9,7 +9,11 @@ app.register_blueprint(auth)
 
 @app.route("/")
 def dashboard():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
     return render_template("dashboard.html")
+
 
 @app.route("/teste-banco")
 def teste_banco():
@@ -27,6 +31,7 @@ def teste_banco():
     conexao.close()
 
     return str(resultados)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
