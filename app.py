@@ -3,6 +3,7 @@ from routes.auth_routes import auth
 from database.db import conectar
 
 app = Flask(__name__)
+app.secret_key = "stockflow_chave_temporaria_dev"
 
 app.register_blueprint(auth)
 
