@@ -1,4 +1,9 @@
-CREATE DATABASE IF NOT EXISTS stockflow;
+DROP DATABASE IF EXISTS stockflow;
+
+CREATE DATABASE stockflow
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
 USE stockflow;
 
 CREATE TABLE usuarios (
@@ -48,14 +53,15 @@ CREATE TABLE lista_compras (
     FOREIGN KEY (id_material) REFERENCES materiais(id_material)
 );
 
-
--- Inserção de usuário administrador padrão (seed)
--- Este usuário é criado apenas se não existir
--- Senha em texto simples temporária (será substituída por hash futuramente)
-
+-- Dados iniciais do sistema
 
 INSERT INTO usuarios (nome, email, senha, perfil, status)
-SELECT 'Administrador', 'admin@stockflow.com', '12345678', 'administrador', 'ativo'
-WHERE NOT EXISTS (
-    SELECT 1 FROM usuarios WHERE email = 'admin@stockflow.com'
-);
+VALUES
+('Administrador', 'admin@stockflow.com', '12345678', 'administrador', 'ativo');
+
+INSERT INTO categorias (nome)
+VALUES
+('Madeira'),
+('Ferragens'),
+('Tintas'),
+('Ferramentas');

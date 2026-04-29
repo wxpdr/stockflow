@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Materiais - StockFlow</title>
+</head>
+<body>
+    <h1>Materiais</h1>
+
+    <p>Bem-vindo, {{ session.nome }}</p>
+
+    <a href="/">Dashboard</a>
+    <a href="/logout">Sair</a>
+
+    <hr>
+
+    <h2>Cadastrar material</h2>
+
+    <form method="POST" action="/materiais/cadastrar">
+        <label for="nome">Nome do material</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <br><br>
+
+        <label for="id_categoria">Categoria</label>
+        <select id="id_categoria" name="id_categoria" required>
+            <option value="1">Madeira</option>
+            <option value="2">Ferragens</option>
+            <option value="3">Tintas</option>
+            <option value="4">Ferramentas</option>
+        </select>
+
+        <br><br>
+
+        <label for="quantidade_atual">Quantidade atual</label>
+        <input type="number" id="quantidade_atual" name="quantidade_atual" min="0" required>
+
+        <br><br>
+
+        <label for="quantidade_minima">Quantidade mínima</label>
+        <input type="number" id="quantidade_minima" name="quantidade_minima" min="0" required>
+
+        <br><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <hr>
+
+    <h2>Lista de materiais</h2>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Material</th>
+                <th>Categoria</th>
+                <th>Quantidade Atual</th>
+                <th>Quantidade Mínima</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in materiais %}
+                <tr>
+                    <td>{{ material.id_material }}</td>
+                    <td>{{ material.nome }}</td>
+                    <td>{{ material.categoria }}</td>
+                    <td>{{ material.quantidade_atual }}</td>
+                    <td>{{ material.quantidade_minima }}</td>
+                    <td>{{ material.status }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Nenhum material cadastrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

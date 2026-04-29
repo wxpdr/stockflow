@@ -1,11 +1,13 @@
 from flask import Flask, render_template, session, redirect, url_for
-from routes.auth_routes import auth
 from database.db import conectar
+from routes.auth_routes import auth
+from routes.material_routes import materiais
 
 app = Flask(__name__)
 app.secret_key = "stockflow_chave_temporaria_dev"
 
 app.register_blueprint(auth)
+app.register_blueprint(materiais)
 
 @app.route("/")
 def dashboard():
