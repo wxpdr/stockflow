@@ -7,7 +7,8 @@ from models.material import (
     listar_alertas_baixo_estoque,
     buscar_material_por_id,
     registrar_entrada_material,
-    registrar_saida_material
+    registrar_saida_material,
+    registrar_descarte_material
 )
 
 materiais = Blueprint("materiais", __name__)
@@ -86,3 +87,22 @@ def listar_alertas():
     alertas = listar_alertas_baixo_estoque()
 
     return render_template("alertas.html", alertas=alertas)
+
+@materiais.route("/materiais/descarte", methods=["POST"])
+def registrar_descarte():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+    quantidade = int(request.form.get("quantidade"))
+    observacao = request.form.get("observacao")
+    id_usuario = session["id_usuario"]
+
+    material = buscar_material_por_id(id_material)
+
+    if not material or quantidade > material["quantidade_atual"]:
+        return "Quantidade indisponível em estoque."
+
+    registrar_descarte_material(id_material, id_usuario, quantidade, observacao)
+
+    return redirect(url_for("materiais.listar_materiais_route"))

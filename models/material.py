@@ -194,3 +194,24 @@ def registrar_saida_material(id_material, id_usuario, quantidade, observacao):
 
     cursor.close()
     conexao.close()
+
+def registrar_descarte_material(id_material, id_usuario, quantidade, observacao):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE materiais
+        SET quantidade_atual = quantidade_atual - %s
+        WHERE id_material = %s
+    """, (quantidade, id_material))
+
+    cursor.execute("""
+        INSERT INTO movimentacoes
+        (id_material, id_usuario, tipo, quantidade, observacao)
+        VALUES (%s, %s, 'descarte', %s, %s)
+    """, (id_material, id_usuario, quantidade, observacao))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()

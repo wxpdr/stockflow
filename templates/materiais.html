@@ -104,6 +104,34 @@
         <button type="submit">Registrar saída</button>
     </form>
 
+    <hr>
+
+    <h2>Registrar descarte de material</h2>
+
+    <form method="POST" action="/materiais/descarte">
+        <label for="id_material_descarte">Material</label>
+        <select id="id_material_descarte" name="id_material" required>
+            {% for material in materiais %}
+                <option value="{{ material.id_material }}">
+                    {{ material.nome }} - Estoque atual: {{ material.quantidade_atual }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="quantidade_descarte">Quantidade descartada</label>
+        <input type="number" id="quantidade_descarte" name="quantidade" min="1" required>
+
+        <br><br>
+
+        <label for="observacao_descarte">Observação</label>
+        <input type="text" id="observacao_descarte" name="observacao">
+
+        <br><br>
+
+        <button type="submit">Registrar descarte</button>
+    </form>
     
     <hr>
 
