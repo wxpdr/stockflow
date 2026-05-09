@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
 from models.material import (
     listar_materiais,
@@ -81,14 +81,16 @@ def registrar_saida():
     observacao = request.form.get("observacao")
     id_usuario = session["id_usuario"]
 
-    if quantidade <= 0:
-        return "A quantidade de saída deve ser maior que zero."
+    if quantidade <= 0:     
+        flash("A quantidade de saída deve ser maior que zero.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+        
 
     material = buscar_material_por_id(id_material)
 
     if not material or quantidade > material["quantidade_atual"]:
-        return "Quantidade indisponível em estoque."
-
+        flash("Quantidade indisponível em estoque.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
     registrar_saida_material(id_material, id_usuario, quantidade, observacao)
 
     return redirect(url_for("materiais.listar_materiais_route"))

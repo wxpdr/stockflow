@@ -7,6 +7,14 @@
 <body>
     <h1>Materiais</h1>
 
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            {% for categoria, mensagem in mensagens %}
+                <p style="color: red;">{{ mensagem }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <p>Bem-vindo, {{ session.nome }}</p>
 
     <a href="/">Dashboard</a>
