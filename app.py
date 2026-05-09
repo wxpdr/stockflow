@@ -3,6 +3,7 @@ from database.db import conectar
 from routes.auth_routes import auth
 from routes.material_routes import materiais
 from routes.movimentacao_routes import movimentacoes
+from routes.usuario_routes import usuarios
 
 app = Flask(__name__)
 app.secret_key = "stockflow_chave_temporaria_dev"
@@ -10,6 +11,7 @@ app.secret_key = "stockflow_chave_temporaria_dev"
 app.register_blueprint(auth)
 app.register_blueprint(materiais)
 app.register_blueprint(movimentacoes)
+app.register_blueprint(usuarios)
 
 @app.route("/")
 def dashboard():
