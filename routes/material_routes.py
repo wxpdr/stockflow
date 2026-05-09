@@ -39,6 +39,15 @@ def cadastrar_material_route():
     quantidade_atual = request.form.get("quantidade_atual")
     quantidade_minima = request.form.get("quantidade_minima")
 
+    if not nome or not id_categoria or quantidade_atual == "" or quantidade_minima == "":
+        return "Preencha todos os campos obrigatórios."
+
+    quantidade_atual = int(quantidade_atual)
+    quantidade_minima = int(quantidade_minima)
+
+    if quantidade_atual < 0 or quantidade_minima < 0:
+        return "As quantidades não podem ser negativas."
+
     cadastrar_material(nome, id_categoria, quantidade_atual, quantidade_minima)
 
     return redirect(url_for("materiais.listar_materiais_route"))
@@ -53,6 +62,9 @@ def registrar_entrada():
     quantidade = int(request.form.get("quantidade"))
     observacao = request.form.get("observacao")
     id_usuario = session["id_usuario"]
+
+    if quantidade <= 0:
+        return "A quantidade de entrada deve ser maior que zero."
 
     registrar_entrada_material(id_material, id_usuario, quantidade, observacao)
 
@@ -69,12 +81,38 @@ def registrar_saida():
     observacao = request.form.get("observacao")
     id_usuario = session["id_usuario"]
 
+    if quantidade <= 0:
+        return "A quantidade de saída deve ser maior que zero."
+
     material = buscar_material_por_id(id_material)
 
     if not material or quantidade > material["quantidade_atual"]:
         return "Quantidade indisponível em estoque."
 
     registrar_saida_material(id_material, id_usuario, quantidade, observacao)
+
+    return redirect(url_for("materiais.listar_materiais_route"))
+
+
+@materiais.route("/materiais/descarte", methods=["POST"])
+def registrar_descarte():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+    quantidade = int(request.form.get("quantidade"))
+    observacao = request.form.get("observacao")
+    id_usuario = session["id_usuario"]
+
+    if quantidade <= 0:
+        return "A quantidade de descarte deve ser maior que zero."
+
+    material = buscar_material_por_id(id_material)
+
+    if not material or quantidade > material["quantidade_atual"]:
+        return "Quantidade indisponível em estoque."
+
+    registrar_descarte_material(id_material, id_usuario, quantidade, observacao)
 
     return redirect(url_for("materiais.listar_materiais_route"))
 
@@ -87,22 +125,3 @@ def listar_alertas():
     alertas = listar_alertas_baixo_estoque()
 
     return render_template("alertas.html", alertas=alertas)
-
-@materiais.route("/materiais/descarte", methods=["POST"])
-def registrar_descarte():
-    if "id_usuario" not in session:
-        return redirect(url_for("auth.login"))
-
-    id_material = request.form.get("id_material")
-    quantidade = int(request.form.get("quantidade"))
-    observacao = request.form.get("observacao")
-    id_usuario = session["id_usuario"]
-
-    material = buscar_material_por_id(id_material)
-
-    if not material or quantidade > material["quantidade_atual"]:
-        return "Quantidade indisponível em estoque."
-
-    registrar_descarte_material(id_material, id_usuario, quantidade, observacao)
-
-    return redirect(url_for("materiais.listar_materiais_route"))
