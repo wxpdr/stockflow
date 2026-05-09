@@ -1,6 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
-from models.usuario import listar_usuarios, cadastrar_usuario
+from models.usuario import (
+    listar_usuarios,
+    cadastrar_usuario,
+    editar_usuario,
+    inativar_usuario
+)
 
 usuarios = Blueprint("usuarios", __name__)
 
@@ -36,5 +41,39 @@ def cadastrar_usuario_route():
     cadastrar_usuario(nome, email, senha, perfil)
 
     flash("Usuário cadastrado com sucesso.", "sucesso")
+
+    return redirect(url_for("usuarios.listar_usuarios_route"))
+
+@usuarios.route("/usuarios/editar", methods=["POST"])
+def editar_usuario_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_usuario = request.form.get("id_usuario")
+    nome = request.form.get("nome")
+    email = request.form.get("email")
+    perfil = request.form.get("perfil")
+
+    if not id_usuario or not nome or not email or not perfil:
+        flash("Preencha todos os campos da edição.", "erro")
+        return redirect(url_for("usuarios.listar_usuarios_route"))
+
+    editar_usuario(id_usuario, nome, email, perfil)
+
+    flash("Usuário atualizado com sucesso.", "sucesso")
+
+    return redirect(url_for("usuarios.listar_usuarios_route"))
+
+
+@usuarios.route("/usuarios/inativar", methods=["POST"])
+def inativar_usuario_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_usuario = request.form.get("id_usuario")
+
+    inativar_usuario(id_usuario)
+
+    flash("Usuário inativado com sucesso.", "sucesso")
 
     return redirect(url_for("usuarios.listar_usuarios_route"))

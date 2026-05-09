@@ -39,3 +39,37 @@ def cadastrar_usuario(nome, email, senha, perfil):
 
     cursor.close()
     conexao.close()
+
+    
+def editar_usuario(id_usuario, nome, email, perfil):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE usuarios
+        SET nome = %s,
+            email = %s,
+            perfil = %s
+        WHERE id_usuario = %s
+    """, (nome, email, perfil, id_usuario))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+
+def inativar_usuario(id_usuario):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE usuarios
+        SET status = 'inativo'
+        WHERE id_usuario = %s
+    """, (id_usuario,))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
