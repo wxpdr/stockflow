@@ -257,3 +257,18 @@ def inativar_material(id_material):
 
     cursor.close()
     conexao.close()
+
+def reativar_material(id_material):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE materiais
+        SET status = 'ativo'
+        WHERE id_material = %s
+    """, (id_material,))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()

@@ -216,6 +216,26 @@
 
         <button type="submit">Inativar material</button>
     </form>
+
+    <hr>
+
+    <h2>Reativar material</h2>
+
+    <form method="POST" action="/materiais/reativar">
+        <label for="id_material_reativar">Material inativo</label>
+
+        <select id="id_material_reativar" name="id_material" required>
+            {% for material in materiais_inativos %}
+                <option value="{{ material.id_material }}">
+                    {{ material.nome }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Reativar material</button>
+    </form>
     
     <hr>
 

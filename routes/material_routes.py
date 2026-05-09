@@ -10,7 +10,8 @@ from models.material import (
     registrar_saida_material,
     registrar_descarte_material,
     editar_material,
-    inativar_material
+    inativar_material,
+    reativar_material
 )
 
 materiais = Blueprint("materiais", __name__)
@@ -169,5 +170,18 @@ def inativar_material_route():
     inativar_material(id_material)
 
     flash("Material inativado com sucesso.", "sucesso")
+
+    return redirect(url_for("materiais.listar_materiais_route"))
+
+@materiais.route("/materiais/reativar", methods=["POST"])
+def reativar_material_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+
+    reativar_material(id_material)
+
+    flash("Material reativado com sucesso.", "sucesso")
 
     return redirect(url_for("materiais.listar_materiais_route"))
