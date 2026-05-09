@@ -1,11 +1,11 @@
 from database.db import conectar
 
 
-def listar_materiais():
+def listar_materiais(status=None):
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
 
-    cursor.execute("""
+    sql = """
         SELECT 
             m.id_material,
             m.nome,
@@ -15,8 +15,17 @@ def listar_materiais():
             m.status
         FROM materiais m
         INNER JOIN categorias c ON m.id_categoria = c.id_categoria
-        ORDER BY m.nome
-    """)
+    """
+
+    parametros = ()
+
+    if status:
+        sql += " WHERE m.status = %s"
+        parametros = (status,)
+
+    sql += " ORDER BY m.nome"
+
+    cursor.execute(sql, parametros)
 
     materiais = cursor.fetchall()
 
@@ -228,6 +237,21 @@ def editar_material(id_material, nome, id_categoria, quantidade_minima):
             quantidade_minima = %s
         WHERE id_material = %s
     """, (nome, id_categoria, quantidade_minima, id_material))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+def inativar_material(id_material):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE materiais
+        SET status = 'inativo'
+        WHERE id_material = %s
+    """, (id_material,))
 
     conexao.commit()
 

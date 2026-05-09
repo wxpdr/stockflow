@@ -9,7 +9,8 @@ from models.material import (
     registrar_entrada_material,
     registrar_saida_material,
     registrar_descarte_material,
-    editar_material
+    editar_material,
+    inativar_material
 )
 
 materiais = Blueprint("materiais", __name__)
@@ -20,12 +21,15 @@ def listar_materiais_route():
     if "id_usuario" not in session:
         return redirect(url_for("auth.login"))
 
-    materiais_lista = listar_materiais()
+    materiais_ativos = listar_materiais("ativo")
+    materiais_inativos = listar_materiais("inativo")
     categorias = listar_categorias()
 
     return render_template(
         "materiais.html",
-        materiais=materiais_lista,
+        materiais=materiais_ativos,
+        materiais_ativos=materiais_ativos,
+        materiais_inativos=materiais_inativos,
         categorias=categorias
     )
 
@@ -152,5 +156,18 @@ def editar_material_route():
     editar_material(id_material, nome, id_categoria, quantidade_minima)
 
     flash("Material atualizado com sucesso.", "sucesso")
+
+    return redirect(url_for("materiais.listar_materiais_route"))
+
+@materiais.route("/materiais/inativar", methods=["POST"])
+def inativar_material_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+
+    inativar_material(id_material)
+
+    flash("Material inativado com sucesso.", "sucesso")
 
     return redirect(url_for("materiais.listar_materiais_route"))

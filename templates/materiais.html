@@ -196,37 +196,119 @@
     </form>
 
     <hr>
+
+    <h2>Inativar material</h2>
+
+    <form method="POST" action="/materiais/inativar">
+        <label for="id_material_inativar">Material</label>
+
+        <select id="id_material_inativar" name="id_material" required>
+            {% for material in materiais %}
+                {% if material.status == 'ativo' %}
+                    <option value="{{ material.id_material }}">
+                        {{ material.nome }}
+                    </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Inativar material</button>
+    </form>
     
+    <hr>
+
     <h2>Lista de materiais</h2>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Material</th>
-                <th>Categoria</th>
-                <th>Quantidade Atual</th>
-                <th>Quantidade Mínima</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for material in materiais %}
+    <button type="button" onclick="mostrarTabela('ativos')">
+        Materiais ativos
+    </button>
+
+    <button type="button" onclick="mostrarTabela('inativos')">
+        Materiais inativos
+    </button>
+
+    <div id="tabela-ativos">
+        <h3>Materiais ativos</h3>
+
+        <table border="1" cellpadding="8">
+            <thead>
                 <tr>
-                    <td>{{ material.id_material }}</td>
-                    <td>{{ material.nome }}</td>
-                    <td>{{ material.categoria }}</td>
-                    <td>{{ material.quantidade_atual }}</td>
-                    <td>{{ material.quantidade_minima }}</td>
-                    <td>{{ material.status }}</td>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Categoria</th>
+                    <th>Quantidade Atual</th>
+                    <th>Quantidade Mínima</th>
+                    <th>Status</th>
                 </tr>
-            {% else %}
+            </thead>
+            <tbody>
+                {% for material in materiais_ativos %}
+                    <tr>
+                        <td>{{ material.id_material }}</td>
+                        <td>{{ material.nome }}</td>
+                        <td>{{ material.categoria }}</td>
+                        <td>{{ material.quantidade_atual }}</td>
+                        <td>{{ material.quantidade_minima }}</td>
+                        <td>{{ material.status }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Nenhum material ativo cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="tabela-inativos" style="display: none;">
+        <h3>Materiais inativos</h3>
+
+        <table border="1" cellpadding="8">
+            <thead>
                 <tr>
-                    <td colspan="6">Nenhum material cadastrado.</td>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Categoria</th>
+                    <th>Quantidade Atual</th>
+                    <th>Quantidade Mínima</th>
+                    <th>Status</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for material in materiais_inativos %}
+                    <tr>
+                        <td>{{ material.id_material }}</td>
+                        <td>{{ material.nome }}</td>
+                        <td>{{ material.categoria }}</td>
+                        <td>{{ material.quantidade_atual }}</td>
+                        <td>{{ material.quantidade_minima }}</td>
+                        <td>{{ material.status }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Nenhum material inativo cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function mostrarTabela(tipo) {
+            const tabelaAtivos = document.getElementById("tabela-ativos");
+            const tabelaInativos = document.getElementById("tabela-inativos");
+
+            if (tipo === "ativos") {
+                tabelaAtivos.style.display = "block";
+                tabelaInativos.style.display = "none";
+            } else {
+                tabelaAtivos.style.display = "none";
+                tabelaInativos.style.display = "block";
+            }
+        }
+    </script>
     
 </body>
 </html>
