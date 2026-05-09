@@ -8,7 +8,8 @@ from models.material import (
     buscar_material_por_id,
     registrar_entrada_material,
     registrar_saida_material,
-    registrar_descarte_material
+    registrar_descarte_material,
+    editar_material
 )
 
 materiais = Blueprint("materiais", __name__)
@@ -127,3 +128,29 @@ def listar_alertas():
     alertas = listar_alertas_baixo_estoque()
 
     return render_template("alertas.html", alertas=alertas)
+
+@materiais.route("/materiais/editar", methods=["POST"])
+def editar_material_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_material = request.form.get("id_material")
+    nome = request.form.get("nome")
+    id_categoria = request.form.get("id_categoria")
+    quantidade_minima = request.form.get("quantidade_minima")
+
+    if not nome or not id_categoria or quantidade_minima == "":
+        flash("Preencha todos os campos da edição.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
+    quantidade_minima = int(quantidade_minima)
+
+    if quantidade_minima < 0:
+        flash("A quantidade mínima não pode ser negativa.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
+    editar_material(id_material, nome, id_categoria, quantidade_minima)
+
+    flash("Material atualizado com sucesso.", "sucesso")
+
+    return redirect(url_for("materiais.listar_materiais_route"))

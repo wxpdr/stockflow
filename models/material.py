@@ -215,3 +215,21 @@ def registrar_descarte_material(id_material, id_usuario, quantidade, observacao)
 
     cursor.close()
     conexao.close()
+
+def editar_material(id_material, nome, id_categoria, quantidade_minima):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE materiais
+        SET
+            nome = %s,
+            id_categoria = %s,
+            quantidade_minima = %s
+        WHERE id_material = %s
+    """, (nome, id_categoria, quantidade_minima, id_material))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
