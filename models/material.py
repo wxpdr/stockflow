@@ -272,3 +272,33 @@ def reativar_material(id_material):
 
     cursor.close()
     conexao.close()
+
+def cadastrar_categoria(nome):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        INSERT INTO categorias (nome)
+        VALUES (%s)
+    """, (nome,))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+
+def editar_categoria(id_categoria, nome):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE categorias
+        SET nome = %s
+        WHERE id_categoria = %s
+    """, (nome, id_categoria))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()

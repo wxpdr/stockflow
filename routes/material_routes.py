@@ -11,7 +11,9 @@ from models.material import (
     registrar_descarte_material,
     editar_material,
     inativar_material,
-    reativar_material
+    reativar_material,
+    cadastrar_categoria,
+    editar_categoria
 )
 
 materiais = Blueprint("materiais", __name__)
@@ -183,5 +185,41 @@ def reativar_material_route():
     reativar_material(id_material)
 
     flash("Material reativado com sucesso.", "sucesso")
+
+    return redirect(url_for("materiais.listar_materiais_route"))
+
+@materiais.route("/categorias/cadastrar", methods=["POST"])
+def cadastrar_categoria_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    nome = request.form.get("nome")
+
+    if not nome:
+        flash("Informe o nome da categoria.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
+    cadastrar_categoria(nome)
+
+    flash("Categoria cadastrada com sucesso.", "sucesso")
+
+    return redirect(url_for("materiais.listar_materiais_route"))
+
+
+@materiais.route("/categorias/editar", methods=["POST"])
+def editar_categoria_route():
+    if "id_usuario" not in session:
+        return redirect(url_for("auth.login"))
+
+    id_categoria = request.form.get("id_categoria")
+    nome = request.form.get("nome")
+
+    if not id_categoria or not nome:
+        flash("Preencha todos os campos da categoria.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
+    editar_categoria(id_categoria, nome)
+
+    flash("Categoria atualizada com sucesso.", "sucesso")
 
     return redirect(url_for("materiais.listar_materiais_route"))

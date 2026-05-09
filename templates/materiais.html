@@ -22,6 +22,42 @@
 
     <hr>
 
+    <h2>Categorias</h2>
+
+    <h3>Cadastrar nova categoria</h3>
+
+    <form method="POST" action="/categorias/cadastrar">
+        <label for="nome_categoria">Nome da categoria</label>
+        <input type="text" id="nome_categoria" name="nome" required>
+
+        <br><br>
+
+        <button type="submit">Cadastrar categoria</button>
+    </form>
+
+    <h3>Editar categoria</h3>
+
+    <form method="POST" action="/categorias/editar">
+        <label for="id_categoria_editar">Categoria</label>
+        <select id="id_categoria_editar" name="id_categoria" required>
+            {% for categoria in categorias %}
+                <option value="{{ categoria.id_categoria }}">
+                    {{ categoria.nome }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="novo_nome_categoria">Novo nome</label>
+        <input type="text" id="novo_nome_categoria" name="nome" required>
+
+        <br><br>
+
+        <button type="submit">Atualizar categoria</button>
+    </form>
+    <hr>
+
     <h2>Cadastrar material</h2>
 
     <form method="POST" action="/materiais/cadastrar">
