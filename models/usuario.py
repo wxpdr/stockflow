@@ -73,3 +73,38 @@ def inativar_usuario(id_usuario):
 
     cursor.close()
     conexao.close()
+
+
+
+def buscar_usuario_por_id(id_usuario):
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT id_usuario, nome, email, perfil, status
+        FROM usuarios
+        WHERE id_usuario = %s
+    """, (id_usuario,))
+
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conexao.close()
+
+    return usuario
+
+
+def reativar_usuario(id_usuario):
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE usuarios
+        SET status = 'ativo'
+        WHERE id_usuario = %s
+    """, (id_usuario,))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()

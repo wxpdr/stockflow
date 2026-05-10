@@ -17,17 +17,11 @@
     {% with mensagens = get_flashed_messages(with_categories=true) %}
         {% if mensagens %}
             {% for categoria, mensagem in mensagens %}
-
                 {% if categoria == 'erro' %}
-                    <p style="color: red;">
+                    <p style="color: red;">{{ mensagem }}</p>
                 {% else %}
-                    <p style="color: green;">
+                    <p style="color: green;">{{ mensagem }}</p>
                 {% endif %}
-
-                    {{ mensagem }}
-
-                </p>
-
             {% endfor %}
         {% endif %}
     {% endwith %}
@@ -98,8 +92,10 @@
 
     <h2>Editar usuário</h2>
 
+    <p>Preencha apenas os campos que deseja alterar. Campos vazios manterão os dados atuais.</p>
+
     <form method="POST" action="/usuarios/editar">
-        <label for="id_usuario_edicao">Usuário</label>
+        <label for="id_usuario_edicao">Usuário ativo</label>
         <select id="id_usuario_edicao" name="id_usuario" required>
             {% for usuario in usuarios %}
                 {% if usuario.status == 'ativo' %}
@@ -113,17 +109,28 @@
         <br><br>
 
         <label for="nome_edicao">Novo nome</label>
-        <input type="text" id="nome_edicao" name="nome" required>
+        <input
+            type="text"
+            id="nome_edicao"
+            name="nome"
+            placeholder="Deixe vazio para manter o nome atual"
+        >
 
         <br><br>
 
         <label for="email_edicao">Novo e-mail</label>
-        <input type="email" id="email_edicao" name="email" required>
+        <input
+            type="email"
+            id="email_edicao"
+            name="email"
+            placeholder="Deixe vazio para manter o e-mail atual"
+        >
 
         <br><br>
 
         <label for="perfil_edicao">Perfil</label>
-        <select id="perfil_edicao" name="perfil" required>
+        <select id="perfil_edicao" name="perfil">
+            <option value="">Manter perfil atual</option>
             <option value="administrador">Administrador</option>
             <option value="funcionario">Funcionário</option>
         </select>
@@ -152,6 +159,27 @@
         <br><br>
 
         <button type="submit">Inativar usuário</button>
+    </form>
+
+    <hr>
+
+    <h2>Reativar usuário</h2>
+
+    <form method="POST" action="/usuarios/reativar">
+        <label for="id_usuario_reativar">Usuário inativo</label>
+        <select id="id_usuario_reativar" name="id_usuario" required>
+            {% for usuario in usuarios %}
+                {% if usuario.status == 'inativo' %}
+                    <option value="{{ usuario.id_usuario }}">
+                        {{ usuario.nome }} - {{ usuario.email }}
+                    </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Reativar usuário</button>
     </form>
 </body>
 </html>
