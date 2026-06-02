@@ -21,23 +21,5 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-@app.route("/teste-banco")
-def teste_banco():
-    conexao = conectar()
-
-    if not conexao:
-        return "Erro ao conectar ao banco ❌"
-
-    cursor = conexao.cursor()
-
-    cursor.execute("SELECT * FROM usuarios")
-
-    resultados = cursor.fetchall()
-
-    conexao.close()
-
-    return str(resultados)
-
-
 if __name__ == "__main__":
     app.run(debug=True)

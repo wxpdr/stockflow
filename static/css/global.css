@@ -999,3 +999,27 @@ tbody tr:last-child td {
         transform: translateY(0) scale(1);
     }
 }
+
+.user-edit-form .full-span {
+    grid-column: 1 / -1;
+}
+
+.user-edit-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-edit-form .form-actions .btn {
+    min-width: 220px;
+}
+
+@media (max-width: 768px) {
+    .user-edit-form .form-actions {
+        justify-content: stretch;
+    }
+
+    .user-edit-form .form-actions .btn {
+        width: 100%;
+        min-width: 0;
+    }
+}

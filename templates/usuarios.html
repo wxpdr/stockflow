@@ -138,7 +138,7 @@
             <button class="panel-close" type="button" data-panel-close>×</button>
         </div>
 
-        <form class="form-grid compact-form" method="POST" action="/usuarios/editar">
+        <form class="form-grid compact-form user-edit-form" method="POST" action="/usuarios/editar">
             <div class="form-field">
                 <label for="id_usuario_edicao">Usuário ativo</label>
                 <select id="id_usuario_edicao" name="id_usuario" required>
@@ -171,7 +171,20 @@
                 </select>
             </div>
 
-            <button class="btn btn-primary" type="submit">Atualizar usuário</button>
+            <div class="form-field full-span">
+                <label for="senha_edicao">Nova senha</label>
+                <input
+                    type="password"
+                    id="senha_edicao"
+                    name="senha"
+                    minlength="8"
+                    placeholder="Deixe em branco para manter a senha atual"
+                >
+            </div>
+
+            <div class="form-actions full-span">
+                <button class="btn btn-primary" type="submit">Atualizar usuário</button>
+            </div>
         </form>
     </article>
 </section>
