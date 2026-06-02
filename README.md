@@ -1,19 +1,32 @@
 # StockFlow
-Sistema web de controle de estoque desenvolvido com Python (Flask) e MySQL, focado na organização de materiais e gestão de movimentações.
 
+Sistema web para controle de estoque desenvolvido como MVP acadêmico do Projeto Integrador.
 
-## Configuração de ambiente
+## Configuração local
 
-Antes de executar o projeto, crie um arquivo `.env` na raiz do sistema com base no arquivo `.env.example`.
+1. Instale as dependências:
 
-Exemplo:
-
-```env
-SECRET_KEY=coloque_uma_chave_grande_e_segura_aqui
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=sua_senha_do_banco
-DB_NAME=stockflow
+```bash
+pip install -r requirements.txt
 ```
 
-O arquivo `.env` não deve ser enviado para repositórios públicos, pois contém informações sensíveis da aplicação.
+2. Crie um arquivo `.env` na raiz do projeto com base no `.env.example`:
+
+```env
+SECRET_KEY=sua_chave_secreta_aqui
+DB_HOST=localhost
+DB_USER=seu_usuario
+DB_PASSWORD=sua_senha
+DB_NAME=stockflow
+FLASK_DEBUG=1
+```
+
+3. Execute o sistema:
+
+```bash
+python app.py
+```
+
+## Observação de segurança
+
+O arquivo `.env` não deve ser enviado para repositórios públicos ou para o deploy. Em ambiente online, configure essas informações diretamente nas variáveis de ambiente da hospedagem.
