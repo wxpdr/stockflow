@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StockFlow{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="brand" href="{{ url_for('dashboard') }}">
+                <span class="brand-mark">SF</span>
+                <span>
+                    <strong>StockFlow</strong>
+                    <small>Controle de estoque</small>
+                </span>
+            </a>
+
+            {% if session.get("id_usuario") %}
+                <nav class="nav-menu" aria-label="Menu principal">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('materiais.listar_materiais_route') }}">Materiais</a>
+                    <a href="{{ url_for('movimentacoes.listar_movimentacoes_route') }}">Movimentações</a>
+                    <a href="{{ url_for('materiais.listar_alertas') }}">Alertas</a>
+                    <a href="{{ url_for('usuarios.listar_usuarios_route') }}">Usuários</a>
+                </nav>
+
+                <div class="user-box">
+                    <span>{{ session.nome }}</span>
+                    <small>{{ session.perfil }}</small>
+                    <a class="logout-link" href="{{ url_for('auth.logout') }}">Sair</a>
+                </div>
+            {% endif %}
+        </aside>
+
+        <main class="main-content">
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="flash-list">
+                        {% for categoria, mensagem in mensagens %}
+                            <p class="flash flash-{{ categoria }}">{{ mensagem }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <section class="modal-overlay" id="confirm-modal" aria-hidden="true">
+        <div class="modal-card confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+            <div class="panel-header">
+                <h2 id="confirm-title">Confirmar ação</h2>
+                <button class="panel-close" type="button" data-confirm-cancel>×</button>
+            </div>
+            <p id="confirm-message">Tem certeza que deseja continuar?</p>
+            <div class="confirm-actions">
+                <button class="btn btn-light" type="button" data-confirm-cancel>Cancelar</button>
+                <button class="btn btn-danger" type="button" data-confirm-submit>Confirmar</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/global.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

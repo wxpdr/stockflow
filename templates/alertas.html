@@ -1,46 +1,51 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Alertas de Estoque - StockFlow</title>
-</head>
-<body>
-    <h1>Alertas de Baixo Estoque</h1>
+{% extends "base.html" %}
 
-    <a href="/">Dashboard</a>
-    <a href="/materiais">Materiais</a>
-    <a href="/movimentacoes">Histórico</a>
-    <a href="/logout">Sair</a>
+{% block title %}Alertas - StockFlow{% endblock %}
 
-    <hr>
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Estoque mínimo</p>
+        <h1>Alertas de baixo estoque</h1>
+        <p>Materiais ativos com quantidade atual menor ou igual ao limite mínimo.</p>
+    </div>
+</section>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Material</th>
-                <th>Categoria</th>
-                <th>Quantidade Atual</th>
-                <th>Quantidade Mínima</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in alertas %}
+<section class="panel">
+    <div class="panel-header">
+        <h2>Itens em atenção</h2>
+        <span class="badge">{{ alertas|length }} alerta(s)</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ item.id_material }}</td>
-                    <td>{{ item.nome }}</td>
-                    <td>{{ item.categoria }}</td>
-                    <td>{{ item.quantidade_atual }}</td>
-                    <td>{{ item.quantidade_minima }}</td>
-                    <td>{{ item.status }}</td>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Categoria</th>
+                    <th>Qtd. atual</th>
+                    <th>Qtd. mínima</th>
+                    <th>Status</th>
                 </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6">Nenhum material com baixo estoque.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+            </thead>
+            <tbody>
+                {% for item in alertas %}
+                    <tr>
+                        <td>{{ item.id_material }}</td>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.categoria }}</td>
+                        <td><span class="status danger">{{ item.quantidade_atual }}</span></td>
+                        <td>{{ item.quantidade_minima }}</td>
+                        <td><span class="status success">{{ item.status }}</span></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td class="empty-state" colspan="6">Nenhum material com baixo estoque.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -57,7 +57,7 @@ CREATE TABLE lista_compras (
 
 INSERT INTO usuarios (nome, email, senha, perfil, status)
 VALUES
-('Administrador', 'admin@stockflow.com', '12345678', 'administrador', 'ativo');
+('Administrador', 'admin@stockflow.com', 'pbkdf2_sha256$260000$2237060cc22eb341a8a8f0f49bc4951f$c12431395b00ffc4871f43c1940bc1c18c8ee544446d2bfea97b765c54fd0b0f', 'administrador', 'ativo');
 
 INSERT INTO categorias (nome)
 VALUES

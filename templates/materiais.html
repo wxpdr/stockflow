@@ -1,335 +1,119 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Materiais - StockFlow</title>
-</head>
-<body>
-    <h1>Materiais</h1>
-
-    {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-            {% for categoria, mensagem in mensagens %}
-                <p style="color: red;">{{ mensagem }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <p>Bem-vindo, {{ session.nome }}</p>
-
-    <a href="/">Dashboard</a>
-    <a href="/logout">Sair</a>
-
-    <hr>
-
-    <h2>Categorias</h2>
-
-    <h3>Cadastrar nova categoria</h3>
-
-    <form method="POST" action="/categorias/cadastrar">
-        <label for="nome_categoria">Nome da categoria</label>
-        <input type="text" id="nome_categoria" name="nome" required>
-
-        <br><br>
-
-        <button type="submit">Cadastrar categoria</button>
-    </form>
-
-    <h3>Editar categoria</h3>
-
-    <form method="POST" action="/categorias/editar">
-        <label for="id_categoria_editar">Categoria</label>
-        <select id="id_categoria_editar" name="id_categoria" required>
-            {% for categoria in categorias %}
-                <option value="{{ categoria.id_categoria }}">
-                    {{ categoria.nome }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="novo_nome_categoria">Novo nome</label>
-        <input type="text" id="novo_nome_categoria" name="nome" required>
-
-        <br><br>
-
-        <button type="submit">Atualizar categoria</button>
-    </form>
-    <hr>
-
-    <h2>Cadastrar material</h2>
-
-    <form method="POST" action="/materiais/cadastrar">
-        <label for="nome">Nome do material</label>
-        <input type="text" id="nome" name="nome" required>
-
-        <br><br>
-
-        <label for="id_categoria">Categoria</label>
-        <select id="id_categoria" name="id_categoria" required>
-            <option value="1">Madeira</option>
-            <option value="2">Ferragens</option>
-            <option value="3">Tintas</option>
-            <option value="4">Ferramentas</option>
-        </select>
-
-        <br><br>
-
-        <label for="quantidade_atual">Quantidade atual</label>
-        <input type="number" id="quantidade_atual" name="quantidade_atual" min="0" required>
-
-        <br><br>
-
-        <label for="quantidade_minima">Quantidade mínima</label>
-        <input type="number" id="quantidade_minima" name="quantidade_minima" min="0" required>
-
-        <br><br>
-
-        <button type="submit">Cadastrar</button>
-    </form>
-
-    <hr>
-
-    <h2>Registrar entrada de material</h2>
-
-    <form method="POST" action="/materiais/entrada">
-        <label for="id_material">Material</label>
-        <select id="id_material" name="id_material" required>
-            {% for material in materiais %}
-                <option value="{{ material.id_material }}">
-                    {{ material.nome }} - Estoque atual: {{ material.quantidade_atual }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="quantidade">Quantidade de entrada</label>
-        <input type="number" id="quantidade" name="quantidade" min="1" required>
-
-        <br><br>
-
-        <label for="observacao">Observação</label>
-        <input type="text" id="observacao" name="observacao">
-
-        <br><br>
-
-        <button type="submit">Registrar entrada</button>
-    </form>
-
-
-    <hr>
-
-    <h2>Registrar saída de material</h2>
-
-    <form method="POST" action="/materiais/saida">
-        <label for="id_material_saida">Material</label>
-        <select id="id_material_saida" name="id_material" required>
-            {% for material in materiais %}
-                <option value="{{ material.id_material }}">
-                    {{ material.nome }} - Estoque atual: {{ material.quantidade_atual }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="quantidade_saida">Quantidade de saída</label>
-        <input type="number" id="quantidade_saida" name="quantidade" min="1" required>
-
-        <br><br>
-
-        <label for="observacao_saida">Observação</label>
-        <input type="text" id="observacao_saida" name="observacao">
-
-        <br><br>
-
-        <button type="submit">Registrar saída</button>
-    </form>
-
-    <hr>
-
-    <h2>Registrar descarte de material</h2>
-
-    <form method="POST" action="/materiais/descarte">
-        <label for="id_material_descarte">Material</label>
-        <select id="id_material_descarte" name="id_material" required>
-            {% for material in materiais %}
-                <option value="{{ material.id_material }}">
-                    {{ material.nome }} - Estoque atual: {{ material.quantidade_atual }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="quantidade_descarte">Quantidade descartada</label>
-        <input type="number" id="quantidade_descarte" name="quantidade" min="1" required>
-
-        <br><br>
-
-        <label for="observacao_descarte">Observação</label>
-        <input type="text" id="observacao_descarte" name="observacao">
-
-        <br><br>
-
-        <button type="submit">Registrar descarte</button>
-    </form>
-    
-
-    <hr>
-
-    <h2>Editar material</h2>
-
-    <form method="POST" action="/materiais/editar">
-
-        <label for="id_material_edicao">Material</label>
-        <select id="id_material_edicao" name="id_material" required>
-            {% for material in materiais %}
-                <option value="{{ material.id_material }}">
-                    {{ material.nome }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="nome_edicao">Novo nome</label>
-        <input type="text" id="nome_edicao" name="nome" required>
-
-        <br><br>
-
-        <label for="id_categoria_edicao">Nova categoria</label>
-        <select id="id_categoria_edicao" name="id_categoria" required>
-            {% for categoria in categorias %}
-                <option value="{{ categoria.id_categoria }}">
-                    {{ categoria.nome }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="quantidade_minima_edicao">
-            Nova quantidade mínima
-        </label>
-
-        <input
-            type="number"
-            id="quantidade_minima_edicao"
-            name="quantidade_minima"
-            min="0"
-            required
-        >
-
-        <br><br>
-
-        <button type="submit">
-            Atualizar material
-        </button>
-
-    </form>
-
-    <hr>
-
-    <h2>Inativar material</h2>
-
-    <form method="POST" action="/materiais/inativar">
-        <label for="id_material_inativar">Material</label>
-
-        <select id="id_material_inativar" name="id_material" required>
-            {% for material in materiais %}
-                {% if material.status == 'ativo' %}
-                    <option value="{{ material.id_material }}">
-                        {{ material.nome }}
-                    </option>
-                {% endif %}
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <button type="submit">Inativar material</button>
-    </form>
-
-    <hr>
-
-    <h2>Reativar material</h2>
-
-    <form method="POST" action="/materiais/reativar">
-        <label for="id_material_reativar">Material inativo</label>
-
-        <select id="id_material_reativar" name="id_material" required>
-            {% for material in materiais_inativos %}
-                <option value="{{ material.id_material }}">
-                    {{ material.nome }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <button type="submit">Reativar material</button>
-    </form>
-    
-    <hr>
-
-    <h2>Lista de materiais</h2>
-
-    <button type="button" onclick="mostrarTabela('ativos')">
-        Materiais ativos
-    </button>
-
-    <button type="button" onclick="mostrarTabela('inativos')">
-        Materiais inativos
-    </button>
-
-    <div id="tabela-ativos">
-        <h3>Materiais ativos</h3>
-
-        <table border="1" cellpadding="8">
+{% extends "base.html" %}
+
+{% block title %}Materiais - StockFlow{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Estoque</p>
+        <h1>Materiais</h1>
+        <p>Lista central de materiais, com ações rápidas para cadastro, edição, movimentações, categorias e status.</p>
+    </div>
+</section>
+
+<section class="panel focus-panel">
+    <div class="panel-header table-main-header">
+        <div>
+            <h2>Lista de materiais</h2>
+            <p>Consulte materiais ativos e inativos cadastrados.</p>
+        </div>
+
+        <div class="header-actions">
+            <div class="segmented-control" aria-label="Filtrar materiais">
+                <button class="active" type="button" data-table-toggle="ativos">Ativos</button>
+                <button type="button" data-table-toggle="inativos">Inativos</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <div class="form-field">
+            <label for="pesquisa_materiais">Pesquisar materiais</label>
+            <input
+                type="search"
+                id="pesquisa_materiais"
+                placeholder="Digite nome, categoria, status ou quantidade"
+                data-table-search
+                data-search-target="#tabela-ativos, #tabela-inativos"
+            >
+        </div>
+    </div>
+
+    <div class="action-toolbar">
+        <button class="tool-button primary" type="button" data-panel-target="material-create">+ Material</button>
+        <button class="tool-button success" type="button" data-panel-target="material-entry">Entrada</button>
+        <button class="tool-button warning" type="button" data-panel-target="material-output">Saída</button>
+        <button class="tool-button danger" type="button" data-panel-target="material-discard">Descarte</button>
+        <button class="tool-button neutral" type="button" data-panel-target="material-categories">Categorias</button>
+        <button class="tool-button neutral" type="button" data-panel-target="material-status">Status</button>
+    </div>
+
+    <div class="table-wrap" id="tabela-ativos">
+        <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Material</th>
                     <th>Categoria</th>
-                    <th>Quantidade Atual</th>
-                    <th>Quantidade Mínima</th>
+                    <th>Qtd. atual</th>
+                    <th>Qtd. mínima</th>
                     <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for material in materiais_ativos %}
-                    <tr>
+                    <tr class="{% if material.quantidade_atual <= material.quantidade_minima %}low-stock-row{% endif %}">
                         <td>{{ material.id_material }}</td>
                         <td>{{ material.nome }}</td>
                         <td>{{ material.categoria }}</td>
                         <td>{{ material.quantidade_atual }}</td>
-                        <td>{{ material.quantidade_minima }}</td>
-                        <td>{{ material.status }}</td>
+                        <td>
+                            {{ material.quantidade_minima }}
+                            {% if material.quantidade_atual <= material.quantidade_minima %}
+                                <span class="status danger">Baixo estoque</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="status status-{{ material.status }}">{{ material.status }}</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <button
+                                    class="icon-button"
+                                    type="button"
+                                    title="Editar material"
+                                    data-panel-target="material-edit"
+                                    data-fill-material-edit
+                                    data-id="{{ material.id_material }}"
+                                    data-nome="{{ material.nome }}"
+                                    data-minima="{{ material.quantidade_minima }}"
+                                >✎</button>
+                                <form method="POST" action="/materiais/inativar" data-confirm="Deseja inativar este material?">
+                                    <input type="hidden" name="id_material" value="{{ material.id_material }}">
+                                    <button class="icon-button danger" type="submit" title="Inativar material">×</button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6">Nenhum material ativo cadastrado.</td>
+                        <td class="empty-state" colspan="7">Nenhum material ativo cadastrado.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div id="tabela-inativos" style="display: none;">
-        <h3>Materiais inativos</h3>
-
-        <table border="1" cellpadding="8">
+    <div class="table-wrap hidden" id="tabela-inativos">
+        <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Material</th>
                     <th>Categoria</th>
-                    <th>Quantidade Atual</th>
-                    <th>Quantidade Mínima</th>
+                    <th>Qtd. atual</th>
+                    <th>Qtd. mínima</th>
                     <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -340,31 +124,270 @@
                         <td>{{ material.categoria }}</td>
                         <td>{{ material.quantidade_atual }}</td>
                         <td>{{ material.quantidade_minima }}</td>
-                        <td>{{ material.status }}</td>
+                        <td><span class="status status-{{ material.status }}">{{ material.status }}</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <form method="POST" action="/materiais/reativar" data-confirm="Deseja reativar este material?">
+                                    <input type="hidden" name="id_material" value="{{ material.id_material }}">
+                                    <button class="icon-button success" type="submit" title="Reativar material">↻</button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6">Nenhum material inativo cadastrado.</td>
+                        <td class="empty-state" colspan="7">Nenhum material inativo cadastrado.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+</section>
 
-    <script>
-        function mostrarTabela(tipo) {
-            const tabelaAtivos = document.getElementById("tabela-ativos");
-            const tabelaInativos = document.getElementById("tabela-inativos");
+<section class="drawer-area">
+    <article class="panel action-panel" id="material-create">
+        <div class="panel-header">
+            <h2>Cadastrar material</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
 
-            if (tipo === "ativos") {
-                tabelaAtivos.style.display = "block";
-                tabelaInativos.style.display = "none";
-            } else {
-                tabelaAtivos.style.display = "none";
-                tabelaInativos.style.display = "block";
-            }
-        }
-    </script>
-    
-</body>
-</html>
+        <form class="form-grid compact-form" method="POST" action="/materiais/cadastrar">
+            <div class="form-field">
+                <label for="nome">Nome do material</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+
+            <div class="form-field">
+                <label for="id_categoria">Categoria</label>
+                <select id="id_categoria" name="id_categoria" required>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="quantidade_atual">Quantidade atual</label>
+                <input type="number" id="quantidade_atual" name="quantidade_atual" min="0" required>
+            </div>
+
+            <div class="form-field">
+                <label for="quantidade_minima">Quantidade mínima</label>
+                <input type="number" id="quantidade_minima" name="quantidade_minima" min="0" required>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Cadastrar material</button>
+        </form>
+    </article>
+
+    <article class="panel action-panel" id="material-edit">
+        <div class="panel-header">
+            <h2>Editar material</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
+
+        <form class="form-grid compact-form" method="POST" action="/materiais/editar">
+            <div class="form-field">
+                <label for="id_material_edicao">Material</label>
+                <select id="id_material_edicao" name="id_material" required>
+                    {% for material in materiais %}
+                        <option value="{{ material.id_material }}">{{ material.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="nome_edicao">Novo nome</label>
+                <input type="text" id="nome_edicao" name="nome" required>
+            </div>
+
+            <div class="form-field">
+                <label for="id_categoria_edicao">Nova categoria</label>
+                <select id="id_categoria_edicao" name="id_categoria" required>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="quantidade_minima_edicao">Nova quantidade mínima</label>
+                <input type="number" id="quantidade_minima_edicao" name="quantidade_minima" min="0" required>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Atualizar material</button>
+        </form>
+    </article>
+
+    <article class="panel action-panel" id="material-entry">
+        <div class="panel-header">
+            <h2>Entrada de material</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
+
+        <form class="form-grid compact-form" method="POST" action="/materiais/entrada">
+            <div class="form-field">
+                <label for="id_material_entrada">Material</label>
+                <select id="id_material_entrada" name="id_material" required>
+                    {% for material in materiais %}
+                        <option value="{{ material.id_material }}">{{ material.nome }} - {{ material.quantidade_atual }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="quantidade_entrada">Quantidade</label>
+                <input type="number" id="quantidade_entrada" name="quantidade" min="1" required>
+            </div>
+
+            <div class="form-field full-span">
+                <label for="observacao_entrada">Observação</label>
+                <input type="text" id="observacao_entrada" name="observacao">
+            </div>
+
+            <button class="btn btn-primary" type="submit">Registrar entrada</button>
+        </form>
+    </article>
+
+    <article class="panel action-panel" id="material-output">
+        <div class="panel-header">
+            <h2>Saída de material</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
+
+        <form class="form-grid compact-form" method="POST" action="/materiais/saida">
+            <div class="form-field">
+                <label for="id_material_saida">Material</label>
+                <select id="id_material_saida" name="id_material" required>
+                    {% for material in materiais %}
+                        <option value="{{ material.id_material }}">{{ material.nome }} - {{ material.quantidade_atual }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="quantidade_saida">Quantidade</label>
+                <input type="number" id="quantidade_saida" name="quantidade" min="1" required>
+            </div>
+
+            <div class="form-field full-span">
+                <label for="observacao_saida">Observação</label>
+                <input type="text" id="observacao_saida" name="observacao">
+            </div>
+
+            <button class="btn btn-warning" type="submit">Registrar saída</button>
+        </form>
+    </article>
+
+    <article class="panel action-panel" id="material-discard">
+        <div class="panel-header">
+            <h2>Descarte de material</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
+
+        <form class="form-grid compact-form" method="POST" action="/materiais/descarte">
+            <div class="form-field">
+                <label for="id_material_descarte">Material</label>
+                <select id="id_material_descarte" name="id_material" required>
+                    {% for material in materiais %}
+                        <option value="{{ material.id_material }}">{{ material.nome }} - {{ material.quantidade_atual }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="quantidade_descarte">Quantidade</label>
+                <input type="number" id="quantidade_descarte" name="quantidade" min="1" required>
+            </div>
+
+            <div class="form-field full-span">
+                <label for="observacao_descarte">Observação</label>
+                <input type="text" id="observacao_descarte" name="observacao">
+            </div>
+
+            <button class="btn btn-danger" type="submit">Registrar descarte</button>
+        </form>
+    </article>
+
+    <article class="panel action-panel" id="material-categories">
+        <div class="panel-header">
+            <div>
+                <h2>Categorias dos materiais</h2>
+                <p>Consulte as categorias cadastradas e mantenha a organização dos materiais.</p>
+            </div>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
+
+        <div class="category-list">
+            {% for categoria in categorias %}
+                <span class="category-chip">{{ categoria.nome }}</span>
+            {% else %}
+                <span class="category-chip muted">Nenhuma categoria cadastrada</span>
+            {% endfor %}
+        </div>
+
+        <div class="split-stack">
+            <form class="form-inline" method="POST" action="/categorias/cadastrar">
+                <div class="form-field">
+                    <label for="nome_categoria">Nova categoria</label>
+                    <input type="text" id="nome_categoria" name="nome" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Cadastrar</button>
+            </form>
+
+            <form class="form-inline" method="POST" action="/categorias/editar">
+                <div class="form-field">
+                    <label for="id_categoria_editar">Categoria</label>
+                    <select id="id_categoria_editar" name="id_categoria" required>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="novo_nome_categoria">Novo nome</label>
+                    <input type="text" id="novo_nome_categoria" name="nome" required>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Atualizar</button>
+            </form>
+        </div>
+    </article>
+
+    <article class="panel action-panel" id="material-status">
+        <div class="panel-header">
+            <h2>Status do material</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
+
+        <div class="split-stack">
+            <form class="form-inline" method="POST" action="/materiais/inativar" data-confirm="Deseja inativar este material?">
+                <div class="form-field">
+                    <label for="id_material_inativar">Material ativo</label>
+                    <select id="id_material_inativar" name="id_material" required>
+                        {% for material in materiais %}
+                            {% if material.status == 'ativo' %}
+                                <option value="{{ material.id_material }}">{{ material.nome }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn btn-danger" type="submit">Inativar</button>
+            </form>
+
+            <form class="form-inline" method="POST" action="/materiais/reativar" data-confirm="Deseja reativar este material?">
+                <div class="form-field">
+                    <label for="id_material_reativar">Material inativo</label>
+                    <select id="id_material_reativar" name="id_material" required>
+                        {% for material in materiais_inativos %}
+                            <option value="{{ material.id_material }}">{{ material.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn btn-primary" type="submit">Reativar</button>
+            </form>
+        </div>
+    </article>
+</section>
+{% endblock %}

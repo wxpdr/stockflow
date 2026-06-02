@@ -1,22 +1,81 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>StockFlow</title>
-</head>
-<body>
-    <h1>Dashboard - StockFlow</h1>
+{% extends "base.html" %}
 
-    <p>Bem-vindo, {{ session.nome }}</p>
+{% block title %}Dashboard - StockFlow{% endblock %}
 
-    <a href="/materiais">Materiais</a>
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Visão geral</p>
+        <h1>Dashboard</h1>
+        <p>Bem-vindo, {{ session.nome }}. Acompanhe as principais áreas do sistema e acesse rapidamente as rotinas de estoque.</p>
+    </div>
+</section>
 
-    <a href="/movimentacoes">Histórico de Movimentações</a>
+<section class="metric-grid dashboard-metrics">
+    <article class="metric-card">
+        <span>Materiais</span>
+        <strong>Estoque</strong>
+        <p>Cadastre, edite e acompanhe materiais ativos e inativos.</p>
+    </article>
 
-    <a href="/alertas">Alertas de Baixo Estoque</a>
-    
-    <a href="/usuarios">Usuários</a>
+    <article class="metric-card warning-card">
+        <span>Alertas</span>
+        <strong>Mínimo</strong>
+        <p>Consulte itens que precisam de atenção no estoque.</p>
+    </article>
 
-    <a href="/logout">Sair</a>
-</body>
-</html>
+    <article class="metric-card danger-card">
+        <span>Movimentações</span>
+        <strong>Fluxo</strong>
+        <p>Veja entradas, saídas e descartes já registrados.</p>
+    </article>
+</section>
+
+<section class="quick-grid">
+    <a class="quick-card" href="{{ url_for('materiais.listar_materiais_route') }}">
+        <span>Materiais</span>
+        <strong>Cadastro, edição e movimentação de itens</strong>
+    </a>
+
+    <a class="quick-card" href="{{ url_for('movimentacoes.listar_movimentacoes_route') }}">
+        <span>Movimentações</span>
+        <strong>Histórico de entradas, saídas e descartes</strong>
+    </a>
+
+    <a class="quick-card" href="{{ url_for('materiais.listar_alertas') }}">
+        <span>Alertas</span>
+        <strong>Materiais abaixo da quantidade mínima</strong>
+    </a>
+
+    <a class="quick-card" href="{{ url_for('usuarios.listar_usuarios_route') }}">
+        <span>Usuários</span>
+        <strong>Controle de acessos do sistema</strong>
+    </a>
+</section>
+
+<section class="panel help-panel">
+    <div class="panel-header">
+        <div>
+            <h2>Ajuda rápida</h2>
+            <p>Um guia simples para usar o StockFlow durante a apresentação.</p>
+        </div>
+    </div>
+
+    <div class="help-list">
+        <details>
+            <summary>Como cadastrar um material?</summary>
+            <p>Acesse Materiais, clique em + Material, preencha os campos e confirme o cadastro.</p>
+        </details>
+
+        <details>
+            <summary>Como registrar entrada, saída ou descarte?</summary>
+            <p>Acesse Materiais e use os botões Entrada, Saída ou Descarte para abrir o formulário correspondente.</p>
+        </details>
+
+        <details>
+            <summary>Onde vejo os alertas?</summary>
+            <p>Acesse Alertas para consultar materiais que atingiram a quantidade mínima definida.</p>
+        </details>
+    </div>
+</section>
+{% endblock %}

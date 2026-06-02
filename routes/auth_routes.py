@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 
 from database.db import conectar
+from models.usuario import verificar_senha, senha_esta_criptografada, atualizar_senha_usuario
 
 auth = Blueprint("auth", __name__)
 
@@ -24,7 +25,10 @@ def login():
         cursor.close()
         conexao.close()
 
-        if usuario and usuario["senha"] == senha and usuario["status"] == "ativo":
+        if usuario and usuario["status"] == "ativo" and verificar_senha(senha, usuario["senha"]):
+            if not senha_esta_criptografada(usuario["senha"]):
+                atualizar_senha_usuario(usuario["id_usuario"], senha)
+
             session["id_usuario"] = usuario["id_usuario"]
             session["nome"] = usuario["nome"]
             session["perfil"] = usuario["perfil"]

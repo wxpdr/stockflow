@@ -1,185 +1,178 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Usuários - StockFlow</title>
-</head>
-<body>
-    <h1>Usuários</h1>
+{% extends "base.html" %}
 
-    <a href="/">Dashboard</a>
-    <a href="/materiais">Materiais</a>
-    <a href="/movimentacoes">Histórico</a>
-    <a href="/logout">Sair</a>
+{% block title %}Usuários - StockFlow{% endblock %}
 
-    <hr>
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Acessos</p>
+        <h1>Usuários</h1>
+        <p>Lista central de usuários, com cadastro e ações rápidas na própria tabela.</p>
+    </div>
+</section>
 
-    {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-            {% for categoria, mensagem in mensagens %}
-                {% if categoria == 'erro' %}
-                    <p style="color: red;">{{ mensagem }}</p>
+<section class="panel focus-panel">
+    <div class="panel-header table-main-header">
+        <div>
+            <h2>Lista de usuários</h2>
+            <p>Controle os acessos, perfis e status dos usuários cadastrados.</p>
+        </div>
+        <span class="badge">{{ usuarios|length }} usuário(s)</span>
+    </div>
+
+    <div class="action-toolbar">
+        <button class="tool-button primary" type="button" data-panel-target="user-create">+ Usuário</button>
+    </div>
+
+    <div class="search-bar">
+        <div class="form-field">
+            <label for="pesquisa_usuarios">Pesquisar usuários</label>
+            <input
+                type="search"
+                id="pesquisa_usuarios"
+                placeholder="Digite nome, e-mail, perfil ou status"
+                data-table-search
+                data-search-target="#tabela-usuarios"
+            >
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table id="tabela-usuarios">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Perfil</th>
+                    <th>Status</th>
+                    <th>Data de criação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.id_usuario }}</td>
+                        <td>{{ usuario.nome }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>{{ usuario.perfil }}</td>
+                        <td><span class="status status-{{ usuario.status }}">{{ usuario.status }}</span></td>
+                        <td>{{ usuario.data_criacao }}</td>
+                        <td>
+                            <div class="row-actions">
+                                {% if usuario.status == 'ativo' %}
+                                    <button
+                                        class="icon-button"
+                                        type="button"
+                                        title="Editar usuário"
+                                        data-panel-target="user-edit"
+                                        data-fill-user-edit
+                                        data-id="{{ usuario.id_usuario }}"
+                                        data-nome="{{ usuario.nome }}"
+                                        data-email="{{ usuario.email }}"
+                                        data-perfil="{{ usuario.perfil }}"
+                                    >✎</button>
+
+                                    <form method="POST" action="/usuarios/inativar" data-confirm="Deseja inativar este usuário?">
+                                        <input type="hidden" name="id_usuario" value="{{ usuario.id_usuario }}">
+                                        <button class="icon-button danger" type="submit" title="Inativar usuário">×</button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="/usuarios/reativar" data-confirm="Deseja reativar este usuário?">
+                                        <input type="hidden" name="id_usuario" value="{{ usuario.id_usuario }}">
+                                        <button class="icon-button success" type="submit" title="Reativar usuário">↻</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
                 {% else %}
-                    <p style="color: green;">{{ mensagem }}</p>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+                    <tr>
+                        <td class="empty-state" colspan="7">Nenhum usuário cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
-    <h2>Cadastrar usuário</h2>
+<section class="drawer-area">
+    <article class="panel action-panel" id="user-create">
+        <div class="panel-header">
+            <h2>Cadastrar usuário</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
 
-    <form method="POST" action="/usuarios/cadastrar">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome" required>
+        <form class="form-grid compact-form" method="POST" action="/usuarios/cadastrar">
+            <div class="form-field">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
 
-        <br><br>
+            <div class="form-field">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-        <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" required>
+            <div class="form-field">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" minlength="8" required>
+            </div>
 
-        <br><br>
+            <div class="form-field">
+                <label for="perfil">Perfil</label>
+                <select id="perfil" name="perfil" required>
+                    <option value="administrador">Administrador</option>
+                    <option value="funcionario">Funcionário</option>
+                </select>
+            </div>
 
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" minlength="8" required>
+            <button class="btn btn-primary" type="submit">Cadastrar usuário</button>
+        </form>
+    </article>
 
-        <br><br>
+    <article class="panel action-panel" id="user-edit">
+        <div class="panel-header">
+            <h2>Editar usuário</h2>
+            <button class="panel-close" type="button" data-panel-close>×</button>
+        </div>
 
-        <label for="perfil">Perfil</label>
-        <select id="perfil" name="perfil" required>
-            <option value="administrador">Administrador</option>
-            <option value="funcionario">Funcionário</option>
-        </select>
+        <form class="form-grid compact-form" method="POST" action="/usuarios/editar">
+            <div class="form-field">
+                <label for="id_usuario_edicao">Usuário ativo</label>
+                <select id="id_usuario_edicao" name="id_usuario" required>
+                    {% for usuario in usuarios %}
+                        {% if usuario.status == 'ativo' %}
+                            <option value="{{ usuario.id_usuario }}">
+                                {{ usuario.nome }} - {{ usuario.email }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
 
-        <br><br>
+            <div class="form-field">
+                <label for="nome_edicao">Novo nome</label>
+                <input type="text" id="nome_edicao" name="nome" placeholder="Deixe vazio para manter">
+            </div>
 
-        <button type="submit">Cadastrar usuário</button>
-    </form>
+            <div class="form-field">
+                <label for="email_edicao">Novo e-mail</label>
+                <input type="email" id="email_edicao" name="email" placeholder="Deixe vazio para manter">
+            </div>
 
-    <hr>
+            <div class="form-field">
+                <label for="perfil_edicao">Perfil</label>
+                <select id="perfil_edicao" name="perfil">
+                    <option value="">Manter perfil atual</option>
+                    <option value="administrador">Administrador</option>
+                    <option value="funcionario">Funcionário</option>
+                </select>
+            </div>
 
-    <h2>Lista de usuários</h2>
-
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Perfil</th>
-                <th>Status</th>
-                <th>Data de criação</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
-                <tr>
-                    <td>{{ usuario.id_usuario }}</td>
-                    <td>{{ usuario.nome }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>{{ usuario.perfil }}</td>
-                    <td>{{ usuario.status }}</td>
-                    <td>{{ usuario.data_criacao }}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6">Nenhum usuário cadastrado.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <hr>
-
-    <h2>Editar usuário</h2>
-
-    <p>Preencha apenas os campos que deseja alterar. Campos vazios manterão os dados atuais.</p>
-
-    <form method="POST" action="/usuarios/editar">
-        <label for="id_usuario_edicao">Usuário ativo</label>
-        <select id="id_usuario_edicao" name="id_usuario" required>
-            {% for usuario in usuarios %}
-                {% if usuario.status == 'ativo' %}
-                    <option value="{{ usuario.id_usuario }}">
-                        {{ usuario.nome }} - {{ usuario.email }}
-                    </option>
-                {% endif %}
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <label for="nome_edicao">Novo nome</label>
-        <input
-            type="text"
-            id="nome_edicao"
-            name="nome"
-            placeholder="Deixe vazio para manter o nome atual"
-        >
-
-        <br><br>
-
-        <label for="email_edicao">Novo e-mail</label>
-        <input
-            type="email"
-            id="email_edicao"
-            name="email"
-            placeholder="Deixe vazio para manter o e-mail atual"
-        >
-
-        <br><br>
-
-        <label for="perfil_edicao">Perfil</label>
-        <select id="perfil_edicao" name="perfil">
-            <option value="">Manter perfil atual</option>
-            <option value="administrador">Administrador</option>
-            <option value="funcionario">Funcionário</option>
-        </select>
-
-        <br><br>
-
-        <button type="submit">Atualizar usuário</button>
-    </form>
-
-    <hr>
-
-    <h2>Inativar usuário</h2>
-
-    <form method="POST" action="/usuarios/inativar">
-        <label for="id_usuario_inativar">Usuário ativo</label>
-        <select id="id_usuario_inativar" name="id_usuario" required>
-            {% for usuario in usuarios %}
-                {% if usuario.status == 'ativo' %}
-                    <option value="{{ usuario.id_usuario }}">
-                        {{ usuario.nome }} - {{ usuario.email }}
-                    </option>
-                {% endif %}
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <button type="submit">Inativar usuário</button>
-    </form>
-
-    <hr>
-
-    <h2>Reativar usuário</h2>
-
-    <form method="POST" action="/usuarios/reativar">
-        <label for="id_usuario_reativar">Usuário inativo</label>
-        <select id="id_usuario_reativar" name="id_usuario" required>
-            {% for usuario in usuarios %}
-                {% if usuario.status == 'inativo' %}
-                    <option value="{{ usuario.id_usuario }}">
-                        {{ usuario.nome }} - {{ usuario.email }}
-                    </option>
-                {% endif %}
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <button type="submit">Reativar usuário</button>
-    </form>
-</body>
-</html>
+            <button class="btn btn-primary" type="submit">Atualizar usuário</button>
+        </form>
+    </article>
+</section>
+{% endblock %}
