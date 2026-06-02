@@ -255,3 +255,67 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+
+
+
+//  == Wenda JS ==
+
+document.addEventListener("DOMContentLoaded", function () {
+    const drawerArea = document.querySelector(".drawer-area");
+    const panelButtons = document.querySelectorAll("[data-panel-target]");
+    const actionPanels = document.querySelectorAll(".action-panel");
+    const closeButtons = document.querySelectorAll("[data-panel-close]");
+
+    function closePanels() {
+        if (!drawerArea) return;
+
+        drawerArea.classList.remove("is-open");
+
+        actionPanels.forEach(function (panel) {
+            panel.classList.remove("is-open");
+        });
+    }
+
+    function openPanel(panelId) {
+        if (!drawerArea) return;
+
+        const targetPanel = document.getElementById(panelId);
+
+        if (!targetPanel) return;
+
+        actionPanels.forEach(function (panel) {
+            panel.classList.remove("is-open");
+        });
+
+        targetPanel.classList.add("is-open");
+        drawerArea.classList.add("is-open");
+    }
+
+    panelButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const panelId = button.getAttribute("data-panel-target");
+            openPanel(panelId);
+        });
+    });
+
+    closeButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            closePanels();
+        });
+    });
+
+    if (drawerArea) {
+        drawerArea.addEventListener("click", function (event) {
+            if (event.target === drawerArea) {
+                closePanels();
+            }
+        });
+    }
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closePanels();
+        }
+    });
+});
