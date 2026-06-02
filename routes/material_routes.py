@@ -21,6 +21,30 @@ from models.material import (
 materiais = Blueprint("materiais", __name__)
 
 
+def converter_inteiro(valor, nome_campo):
+    try:
+        if valor is None or valor == "":
+            return None, f"O campo {nome_campo} é obrigatório."
+
+        numero = int(valor)
+
+        return numero, None
+    except ValueError:
+        return None, f"O campo {nome_campo} deve conter um número válido."
+
+
+def validar_material_ativo(id_material):
+    material = buscar_material_por_id(id_material)
+
+    if not material:
+        return None, "Material não encontrado."
+
+    if material["status"] != "ativo":
+        return None, "Materiais inativos não podem receber movimentações."
+
+    return material, None
+
+
 @materiais.route("/materiais")
 @login_required
 def listar_materiais_route():
@@ -38,19 +62,26 @@ def listar_materiais_route():
 
 
 @materiais.route("/materiais/cadastrar", methods=["POST"])
-@login_required
+@admin_required
 def cadastrar_material_route():
     nome = request.form.get("nome")
     id_categoria = request.form.get("id_categoria")
-    quantidade_atual = request.form.get("quantidade_atual")
-    quantidade_minima = request.form.get("quantidade_minima")
+    quantidade_atual_raw = request.form.get("quantidade_atual")
+    quantidade_minima_raw = request.form.get("quantidade_minima")
 
-    if not nome or not id_categoria or quantidade_atual == "" or quantidade_minima == "":
+    if not nome or not id_categoria:
         flash("Preencha todos os campos obrigatórios.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
-    quantidade_atual = int(quantidade_atual)
-    quantidade_minima = int(quantidade_minima)
+    quantidade_atual, erro = converter_inteiro(quantidade_atual_raw, "quantidade atual")
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
+    quantidade_minima, erro = converter_inteiro(quantidade_minima_raw, "quantidade mínima")
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
     if quantidade_atual < 0 or quantidade_minima < 0:
         flash("As quantidades não podem ser negativas.", "erro")
@@ -66,18 +97,22 @@ def cadastrar_material_route():
 @login_required
 def registrar_entrada():
     id_material = request.form.get("id_material")
-    quantidade = int(request.form.get("quantidade"))
+    quantidade_raw = request.form.get("quantidade")
     observacao = request.form.get("observacao")
     id_usuario = session["id_usuario"]
+
+    quantidade, erro = converter_inteiro(quantidade_raw, "quantidade")
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
     if quantidade <= 0:
         flash("A quantidade de entrada deve ser maior que zero.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
-    material = buscar_material_por_id(id_material)
-
-    if not material:
-        flash("Material não encontrado.", "erro")
+    material, erro = validar_material_ativo(id_material)
+    if erro:
+        flash(erro, "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
     registrar_entrada_material(id_material, id_usuario, quantidade, observacao)
@@ -90,17 +125,25 @@ def registrar_entrada():
 @login_required
 def registrar_saida():
     id_material = request.form.get("id_material")
-    quantidade = int(request.form.get("quantidade"))
+    quantidade_raw = request.form.get("quantidade")
     observacao = request.form.get("observacao")
     id_usuario = session["id_usuario"]
+
+    quantidade, erro = converter_inteiro(quantidade_raw, "quantidade")
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
     if quantidade <= 0:
         flash("A quantidade de saída deve ser maior que zero.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
-    material = buscar_material_por_id(id_material)
+    material, erro = validar_material_ativo(id_material)
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
-    if not material or quantidade > material["quantidade_atual"]:
+    if quantidade > material["quantidade_atual"]:
         flash("Quantidade indisponível em estoque.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
@@ -114,17 +157,25 @@ def registrar_saida():
 @login_required
 def registrar_descarte():
     id_material = request.form.get("id_material")
-    quantidade = int(request.form.get("quantidade"))
+    quantidade_raw = request.form.get("quantidade")
     observacao = request.form.get("observacao")
     id_usuario = session["id_usuario"]
+
+    quantidade, erro = converter_inteiro(quantidade_raw, "quantidade")
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
     if quantidade <= 0:
         flash("A quantidade de descarte deve ser maior que zero.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
-    material = buscar_material_por_id(id_material)
+    material, erro = validar_material_ativo(id_material)
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
-    if not material or quantidade > material["quantidade_atual"]:
+    if quantidade > material["quantidade_atual"]:
         flash("Quantidade indisponível em estoque.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
@@ -148,16 +199,25 @@ def editar_material_route():
     id_material = request.form.get("id_material")
     nome = request.form.get("nome")
     id_categoria = request.form.get("id_categoria")
-    quantidade_minima = request.form.get("quantidade_minima")
+    quantidade_minima_raw = request.form.get("quantidade_minima")
 
-    if not nome or not id_categoria or quantidade_minima == "":
+    if not nome or not id_categoria:
         flash("Preencha todos os campos da edição.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
-    quantidade_minima = int(quantidade_minima)
+    quantidade_minima, erro = converter_inteiro(quantidade_minima_raw, "quantidade mínima")
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
     if quantidade_minima < 0:
         flash("A quantidade mínima não pode ser negativa.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
+    material = buscar_material_por_id(id_material)
+
+    if not material:
+        flash("Material não encontrado.", "erro")
         return redirect(url_for("materiais.listar_materiais_route"))
 
     editar_material(id_material, nome, id_categoria, quantidade_minima)
@@ -172,6 +232,12 @@ def editar_material_route():
 def inativar_material_route():
     id_material = request.form.get("id_material")
 
+    material = buscar_material_por_id(id_material)
+
+    if not material:
+        flash("Material não encontrado.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
+
     inativar_material(id_material)
 
     flash("Material inativado com sucesso.", "sucesso")
@@ -183,6 +249,12 @@ def inativar_material_route():
 @admin_required
 def reativar_material_route():
     id_material = request.form.get("id_material")
+
+    material = buscar_material_por_id(id_material)
+
+    if not material:
+        flash("Material não encontrado.", "erro")
+        return redirect(url_for("materiais.listar_materiais_route"))
 
     reativar_material(id_material)
 
