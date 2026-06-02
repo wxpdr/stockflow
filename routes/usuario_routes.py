@@ -9,7 +9,8 @@ from models.usuario import (
     inativar_usuario,
     reativar_usuario,
     buscar_usuario_por_id,
-    atualizar_senha_usuario
+    atualizar_senha_usuario,
+    senha_valida
 )
 
 usuarios = Blueprint("usuarios", __name__)
@@ -35,8 +36,8 @@ def cadastrar_usuario_route():
         flash("Preencha todos os campos do usuário.", "erro")
         return redirect(url_for("usuarios.listar_usuarios_route"))
 
-    if len(senha) < 8:
-        flash("A senha deve possuir no mínimo 8 caracteres.", "erro")
+    if not senha_valida(senha):
+        flash("A senha deve possuir no mínimo 8 caracteres, contendo letras e números.", "erro")
         return redirect(url_for("usuarios.listar_usuarios_route"))
 
     cadastrar_usuario(nome, email, senha, perfil)
@@ -73,8 +74,8 @@ def editar_usuario_route():
     editar_usuario(id_usuario, nome, email, perfil)
 
     if nova_senha:
-        if len(nova_senha) < 8:
-            flash("A nova senha deve possuir no mínimo 8 caracteres.", "erro")
+        if not senha_valida(nova_senha):
+            flash("A nova senha deve possuir no mínimo 8 caracteres, contendo letras e números.", "erro")
             return redirect(url_for("usuarios.listar_usuarios_route"))
 
         atualizar_senha_usuario(id_usuario, nova_senha)

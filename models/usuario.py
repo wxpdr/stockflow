@@ -3,6 +3,16 @@ import hashlib
 import hmac
 import secrets
 
+def senha_valida(senha):
+    if not senha:
+        return False
+
+    possui_letra = any(caractere.isalpha() for caractere in senha)
+    possui_numero = any(caractere.isdigit() for caractere in senha)
+
+    return len(senha) >= 8 and possui_letra and possui_numero
+
+
 
 def gerar_hash_senha(senha):
     salt = secrets.token_hex(16)

@@ -2,31 +2,27 @@
 Script de inicialização do banco de dados do sistema StockFlow.
 
 Objetivo:
-Permitir a criação automática da estrutura do banco de dados (database, tabelas e dados iniciais)
-sem a necessidade de intervenção manual via ferramentas como MySQL Workbench.
-
-Funcionamento:
-- Executa o script SQL localizado em sql/stockflow.sql
-- Cria o banco de dados caso não exista
-- Cria todas as tabelas necessárias para o funcionamento do sistema
-- Insere um usuário administrador padrão (seed)
+Permitir a criação automática da estrutura do banco de dados a partir do arquivo
+sql/stockflow.sql.
 
 Observação:
-Atualmente, a senha do usuário administrador é armazenada em formato simples (texto puro),
-sendo esta uma abordagem temporária para fins de desenvolvimento inicial (MVP).
-
-Em versões futuras, será implementado:
-- Criptografia de senha (bcrypt)
-- Melhorias de segurança no processo de autenticação
+As credenciais do banco são lidas por variáveis de ambiente, evitando que senhas
+fiquem expostas diretamente no código-fonte.
 """
 
+import os
+
 import mysql.connector
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def inicializar_banco():
     conexao = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="130500"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
     )
 
     cursor = conexao.cursor()
