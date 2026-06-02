@@ -7,7 +7,7 @@
     <div>
         <p class="eyebrow">Estoque</p>
         <h1>Materiais</h1>
-        <p>Lista central de materiais, com ações rápidas para cadastro, edição, movimentações, categorias e status.</p>
+        <p>Lista central de materiais, com ações rápidas para consulta, edição e movimentações de estoque.</p>
     </div>
 </section>
 
@@ -40,12 +40,18 @@
     </div>
 
     <div class="action-toolbar">
-        <button class="tool-button primary" type="button" data-panel-target="material-create">+ Material</button>
+        {% if session.get("perfil") == "administrador" %}
+            <button class="tool-button primary" type="button" data-panel-target="material-create">+ Material</button>
+        {% endif %}
+
         <button class="tool-button success" type="button" data-panel-target="material-entry">Entrada</button>
         <button class="tool-button warning" type="button" data-panel-target="material-output">Saída</button>
         <button class="tool-button danger" type="button" data-panel-target="material-discard">Descarte</button>
-        <button class="tool-button neutral" type="button" data-panel-target="material-categories">Categorias</button>
-        <button class="tool-button neutral" type="button" data-panel-target="material-status">Status</button>
+
+        {% if session.get("perfil") == "administrador" %}
+            <button class="tool-button neutral" type="button" data-panel-target="material-categories">Categorias</button>
+            <button class="tool-button neutral" type="button" data-panel-target="material-status">Status</button>
+        {% endif %}
     </div>
 
     <div class="table-wrap" id="tabela-ativos">
@@ -87,10 +93,13 @@
                                     data-nome="{{ material.nome }}"
                                     data-minima="{{ material.quantidade_minima }}"
                                 >✎</button>
-                                <form method="POST" action="/materiais/inativar" data-confirm="Deseja inativar este material?">
-                                    <input type="hidden" name="id_material" value="{{ material.id_material }}">
-                                    <button class="icon-button danger" type="submit" title="Inativar material">×</button>
-                                </form>
+
+                                {% if session.get("perfil") == "administrador" %}
+                                    <form method="POST" action="/materiais/inativar" data-confirm="Deseja inativar este material?">
+                                        <input type="hidden" name="id_material" value="{{ material.id_material }}">
+                                        <button class="icon-button danger" type="submit" title="Inativar material">×</button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -113,7 +122,9 @@
                     <th>Qtd. atual</th>
                     <th>Qtd. mínima</th>
                     <th>Status</th>
-                    <th>Ações</th>
+                    {% if session.get("perfil") == "administrador" %}
+                        <th>Ações</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -125,18 +136,23 @@
                         <td>{{ material.quantidade_atual }}</td>
                         <td>{{ material.quantidade_minima }}</td>
                         <td><span class="status status-{{ material.status }}">{{ material.status }}</span></td>
-                        <td>
-                            <div class="row-actions">
-                                <form method="POST" action="/materiais/reativar" data-confirm="Deseja reativar este material?">
-                                    <input type="hidden" name="id_material" value="{{ material.id_material }}">
-                                    <button class="icon-button success" type="submit" title="Reativar material">↻</button>
-                                </form>
-                            </div>
-                        </td>
+
+                        {% if session.get("perfil") == "administrador" %}
+                            <td>
+                                <div class="row-actions">
+                                    <form method="POST" action="/materiais/reativar" data-confirm="Deseja reativar este material?">
+                                        <input type="hidden" name="id_material" value="{{ material.id_material }}">
+                                        <button class="icon-button success" type="submit" title="Reativar material">↻</button>
+                                    </form>
+                                </div>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% else %}
                     <tr>
-                        <td class="empty-state" colspan="7">Nenhum material inativo cadastrado.</td>
+                        <td class="empty-state" colspan="{% if session.get('perfil') == 'administrador' %}7{% else %}6{% endif %}">
+                            Nenhum material inativo cadastrado.
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -145,40 +161,42 @@
 </section>
 
 <section class="drawer-area">
-    <article class="panel action-panel" id="material-create">
-        <div class="panel-header">
-            <h2>Cadastrar material</h2>
-            <button class="panel-close" type="button" data-panel-close>×</button>
-        </div>
-
-        <form class="form-grid compact-form" method="POST" action="/materiais/cadastrar">
-            <div class="form-field">
-                <label for="nome">Nome do material</label>
-                <input type="text" id="nome" name="nome" required>
+    {% if session.get("perfil") == "administrador" %}
+        <article class="panel action-panel" id="material-create">
+            <div class="panel-header">
+                <h2>Cadastrar material</h2>
+                <button class="panel-close" type="button" data-panel-close>×</button>
             </div>
 
-            <div class="form-field">
-                <label for="id_categoria">Categoria</label>
-                <select id="id_categoria" name="id_categoria" required>
-                    {% for categoria in categorias %}
-                        <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            <form class="form-grid compact-form" method="POST" action="/materiais/cadastrar">
+                <div class="form-field">
+                    <label for="nome">Nome do material</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
 
-            <div class="form-field">
-                <label for="quantidade_atual">Quantidade atual</label>
-                <input type="number" id="quantidade_atual" name="quantidade_atual" min="0" required>
-            </div>
+                <div class="form-field">
+                    <label for="id_categoria">Categoria</label>
+                    <select id="id_categoria" name="id_categoria" required>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <div class="form-field">
-                <label for="quantidade_minima">Quantidade mínima</label>
-                <input type="number" id="quantidade_minima" name="quantidade_minima" min="0" required>
-            </div>
+                <div class="form-field">
+                    <label for="quantidade_atual">Quantidade atual</label>
+                    <input type="number" id="quantidade_atual" name="quantidade_atual" min="0" required>
+                </div>
 
-            <button class="btn btn-primary" type="submit">Cadastrar material</button>
-        </form>
-    </article>
+                <div class="form-field">
+                    <label for="quantidade_minima">Quantidade mínima</label>
+                    <input type="number" id="quantidade_minima" name="quantidade_minima" min="0" required>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Cadastrar material</button>
+            </form>
+        </article>
+    {% endif %}
 
     <article class="panel action-panel" id="material-edit">
         <div class="panel-header">
@@ -309,85 +327,87 @@
         </form>
     </article>
 
-    <article class="panel action-panel" id="material-categories">
-        <div class="panel-header">
-            <div>
-                <h2>Categorias dos materiais</h2>
-                <p>Consulte as categorias cadastradas e mantenha a organização dos materiais.</p>
+    {% if session.get("perfil") == "administrador" %}
+        <article class="panel action-panel" id="material-categories">
+            <div class="panel-header">
+                <div>
+                    <h2>Categorias dos materiais</h2>
+                    <p>Consulte as categorias cadastradas e mantenha a organização dos materiais.</p>
+                </div>
+                <button class="panel-close" type="button" data-panel-close>×</button>
             </div>
-            <button class="panel-close" type="button" data-panel-close>×</button>
-        </div>
 
-        <div class="category-list">
-            {% for categoria in categorias %}
-                <span class="category-chip">{{ categoria.nome }}</span>
-            {% else %}
-                <span class="category-chip muted">Nenhuma categoria cadastrada</span>
-            {% endfor %}
-        </div>
+            <div class="category-list">
+                {% for categoria in categorias %}
+                    <span class="category-chip">{{ categoria.nome }}</span>
+                {% else %}
+                    <span class="category-chip muted">Nenhuma categoria cadastrada</span>
+                {% endfor %}
+            </div>
 
-        <div class="split-stack">
-            <form class="form-inline" method="POST" action="/categorias/cadastrar">
-                <div class="form-field">
-                    <label for="nome_categoria">Nova categoria</label>
-                    <input type="text" id="nome_categoria" name="nome" required>
-                </div>
-                <button class="btn btn-primary" type="submit">Cadastrar</button>
-            </form>
+            <div class="split-stack">
+                <form class="form-inline" method="POST" action="/categorias/cadastrar">
+                    <div class="form-field">
+                        <label for="nome_categoria">Nova categoria</label>
+                        <input type="text" id="nome_categoria" name="nome" required>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Cadastrar</button>
+                </form>
 
-            <form class="form-inline" method="POST" action="/categorias/editar">
-                <div class="form-field">
-                    <label for="id_categoria_editar">Categoria</label>
-                    <select id="id_categoria_editar" name="id_categoria" required>
-                        {% for categoria in categorias %}
-                            <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <form class="form-inline" method="POST" action="/categorias/editar">
+                    <div class="form-field">
+                        <label for="id_categoria_editar">Categoria</label>
+                        <select id="id_categoria_editar" name="id_categoria" required>
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id_categoria }}">{{ categoria.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <div class="form-field">
-                    <label for="novo_nome_categoria">Novo nome</label>
-                    <input type="text" id="novo_nome_categoria" name="nome" required>
-                </div>
+                    <div class="form-field">
+                        <label for="novo_nome_categoria">Novo nome</label>
+                        <input type="text" id="novo_nome_categoria" name="nome" required>
+                    </div>
 
-                <button class="btn btn-primary" type="submit">Atualizar</button>
-            </form>
-        </div>
-    </article>
+                    <button class="btn btn-primary" type="submit">Atualizar</button>
+                </form>
+            </div>
+        </article>
 
-    <article class="panel action-panel" id="material-status">
-        <div class="panel-header">
-            <h2>Status do material</h2>
-            <button class="panel-close" type="button" data-panel-close>×</button>
-        </div>
+        <article class="panel action-panel" id="material-status">
+            <div class="panel-header">
+                <h2>Status do material</h2>
+                <button class="panel-close" type="button" data-panel-close>×</button>
+            </div>
 
-        <div class="split-stack">
-            <form class="form-inline" method="POST" action="/materiais/inativar" data-confirm="Deseja inativar este material?">
-                <div class="form-field">
-                    <label for="id_material_inativar">Material ativo</label>
-                    <select id="id_material_inativar" name="id_material" required>
-                        {% for material in materiais %}
-                            {% if material.status == 'ativo' %}
+            <div class="split-stack">
+                <form class="form-inline" method="POST" action="/materiais/inativar" data-confirm="Deseja inativar este material?">
+                    <div class="form-field">
+                        <label for="id_material_inativar">Material ativo</label>
+                        <select id="id_material_inativar" name="id_material" required>
+                            {% for material in materiais %}
+                                {% if material.status == 'ativo' %}
+                                    <option value="{{ material.id_material }}">{{ material.nome }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-danger" type="submit">Inativar</button>
+                </form>
+
+                <form class="form-inline" method="POST" action="/materiais/reativar" data-confirm="Deseja reativar este material?">
+                    <div class="form-field">
+                        <label for="id_material_reativar">Material inativo</label>
+                        <select id="id_material_reativar" name="id_material" required>
+                            {% for material in materiais_inativos %}
                                 <option value="{{ material.id_material }}">{{ material.nome }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-                <button class="btn btn-danger" type="submit">Inativar</button>
-            </form>
-
-            <form class="form-inline" method="POST" action="/materiais/reativar" data-confirm="Deseja reativar este material?">
-                <div class="form-field">
-                    <label for="id_material_reativar">Material inativo</label>
-                    <select id="id_material_reativar" name="id_material" required>
-                        {% for material in materiais_inativos %}
-                            <option value="{{ material.id_material }}">{{ material.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button class="btn btn-primary" type="submit">Reativar</button>
-            </form>
-        </div>
-    </article>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Reativar</button>
+                </form>
+            </div>
+        </article>
+    {% endif %}
 </section>
 {% endblock %}

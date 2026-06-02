@@ -21,9 +21,12 @@
                 <nav class="nav-menu" aria-label="Menu principal">
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('materiais.listar_materiais_route') }}">Materiais</a>
-                    <a href="{{ url_for('movimentacoes.listar_movimentacoes_route') }}">Movimentações</a>
                     <a href="{{ url_for('materiais.listar_alertas') }}">Alertas</a>
-                    <a href="{{ url_for('usuarios.listar_usuarios_route') }}">Usuários</a>
+
+                    {% if session.get("perfil") == "administrador" %}
+                        <a href="{{ url_for('movimentacoes.listar_movimentacoes_route') }}">Movimentações</a>
+                        <a href="{{ url_for('usuarios.listar_usuarios_route') }}">Usuários</a>
+                    {% endif %}
                 </nav>
 
                 <div class="user-box">

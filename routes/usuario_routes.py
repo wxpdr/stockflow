@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+
+from decorators import admin_required
 
 from models.usuario import (
     listar_usuarios,
@@ -13,20 +15,16 @@ usuarios = Blueprint("usuarios", __name__)
 
 
 @usuarios.route("/usuarios")
+@admin_required
 def listar_usuarios_route():
-    if "id_usuario" not in session:
-        return redirect(url_for("auth.login"))
-
     usuarios_lista = listar_usuarios()
 
     return render_template("usuarios.html", usuarios=usuarios_lista)
 
 
 @usuarios.route("/usuarios/cadastrar", methods=["POST"])
+@admin_required
 def cadastrar_usuario_route():
-    if "id_usuario" not in session:
-        return redirect(url_for("auth.login"))
-
     nome = request.form.get("nome")
     email = request.form.get("email")
     senha = request.form.get("senha")
@@ -46,11 +44,10 @@ def cadastrar_usuario_route():
 
     return redirect(url_for("usuarios.listar_usuarios_route"))
 
-@usuarios.route("/usuarios/editar", methods=["POST"])
-def editar_usuario_route():
-    if "id_usuario" not in session:
-        return redirect(url_for("auth.login"))
 
+@usuarios.route("/usuarios/editar", methods=["POST"])
+@admin_required
+def editar_usuario_route():
     id_usuario = request.form.get("id_usuario")
     nome = request.form.get("nome")
     email = request.form.get("email")
@@ -79,10 +76,8 @@ def editar_usuario_route():
 
 
 @usuarios.route("/usuarios/inativar", methods=["POST"])
+@admin_required
 def inativar_usuario_route():
-    if "id_usuario" not in session:
-        return redirect(url_for("auth.login"))
-
     id_usuario = request.form.get("id_usuario")
 
     inativar_usuario(id_usuario)
@@ -91,11 +86,10 @@ def inativar_usuario_route():
 
     return redirect(url_for("usuarios.listar_usuarios_route"))
 
-@usuarios.route("/usuarios/reativar", methods=["POST"])
-def reativar_usuario_route():
-    if "id_usuario" not in session:
-        return redirect(url_for("auth.login"))
 
+@usuarios.route("/usuarios/reativar", methods=["POST"])
+@admin_required
+def reativar_usuario_route():
     id_usuario = request.form.get("id_usuario")
 
     reativar_usuario(id_usuario)
