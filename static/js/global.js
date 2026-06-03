@@ -319,3 +319,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.querySelector(".sidebar");
+    const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
+
+    if (!sidebar || !sidebarToggle) {
+        return;
+    }
+
+    sidebarToggle.addEventListener("click", function () {
+        const estaAberta = sidebar.classList.toggle("is-open");
+
+        sidebarToggle.setAttribute("aria-expanded", estaAberta ? "true" : "false");
+        sidebarToggle.textContent = estaAberta ? "× Fechar menu" : "☰ Menu";
+    });
+});

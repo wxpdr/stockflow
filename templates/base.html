@@ -18,7 +18,17 @@
             </a>
 
             {% if session.get("id_usuario") %}
-                <nav class="nav-menu" aria-label="Menu principal">
+                <button
+                    class="sidebar-toggle"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="sidebar-menu"
+                    data-sidebar-toggle
+                >
+                    ☰ Menu
+                </button>
+
+                <nav class="nav-menu" id="sidebar-menu" aria-label="Menu principal">
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('materiais.listar_materiais_route') }}">Materiais</a>
                     <a href="{{ url_for('materiais.listar_alertas') }}">Alertas</a>
