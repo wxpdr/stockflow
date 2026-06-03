@@ -101,7 +101,12 @@ def buscar_material_por_id(id_material):
     cursor = conexao.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT id_material, quantidade_atual
+        SELECT 
+            id_material,
+            nome,
+            quantidade_atual,
+            quantidade_minima,
+            status
         FROM materiais
         WHERE id_material = %s
     """, (id_material,))
