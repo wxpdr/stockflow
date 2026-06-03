@@ -207,6 +207,20 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
             pendingForm = form;
 
+            const drawerArea = document.querySelector(".drawer-area");
+
+            document.querySelectorAll(".action-panel").forEach((panel) => {
+                panel.classList.remove("is-open");
+            });
+
+            document.querySelectorAll("[data-panel-target]").forEach((button) => {
+                button.classList.remove("active");
+            });
+
+            if (drawerArea) {
+                drawerArea.classList.remove("is-open");
+            }
+
             if (confirmMessage) {
                 confirmMessage.textContent = form.dataset.confirm;
             }

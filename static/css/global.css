@@ -1311,3 +1311,9 @@ tbody tr:last-child td {
         padding: 20px 14px;
     }
 }
+
+/* CONFIRMAÇÃO ACIMA DOS MODAIS DE AÇÃO */
+
+#confirm-modal {
+    z-index: 2000;
+}
