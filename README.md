@@ -166,13 +166,6 @@ As informações sensíveis, como chave secreta, usuário, senha e nome do banco
 
 ## 🖼️ Preview
 
-A demonstração pode ser acessada pelo link do deploy.
-
-Caso queira adicionar capturas futuramente, uma sugestão de estrutura seria:
-
-```md
-## 🖼️ Preview
-
 ### Login
 
 ![Preview da tela de login](./imagens-readme/preview-login.png)
@@ -188,7 +181,6 @@ Caso queira adicionar capturas futuramente, uma sugestão de estrutura seria:
 ### Movimentações
 
 ![Preview da tela de movimentações](./imagens-readme/preview-movimentacoes.png)
-```
 
 ---
 
